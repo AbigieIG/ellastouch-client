@@ -51,6 +51,7 @@ export interface BookingType {
   address: string;
   zipCode: string;
   user?: UserType;
+  comment?: string;
   service?: ServiceType;
   createdAt?: string | number | Date;
 }

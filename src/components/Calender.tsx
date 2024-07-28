@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useNavigate } from "react-router-dom";
@@ -33,12 +33,11 @@ const BookingCalendar = ({ data }: { data: ServiceType | undefined }) => {
     setSlots(newSlots);
   }, []);
 
-
-  const handleDateChange = (newDate: Date | Date[] | null) => {
-    if (newDate instanceof Date) {
-      setDate(newDate);
-    } else if (Array.isArray(newDate)) {
-      setDate(newDate[0]);
+  const handleDateChange = (value: Date | Date[] | null) => {
+    if (value instanceof Date) {
+      setDate(value);
+    } else if (Array.isArray(value)) {
+      setDate(value[0]);
     } else {
       setDate(null);
     }
@@ -64,9 +63,9 @@ const BookingCalendar = ({ data }: { data: ServiceType | undefined }) => {
     setBookings([...bookings, newBooking]);
     setSelectedSlot(null);
     localStorage.setItem("booking", JSON.stringify(newBooking));
-    if(token){
+    if (token) {
       navigate("/book-form");
-    }else{
+    } else {
       navigate("/login");
     }
   };
@@ -82,7 +81,12 @@ const BookingCalendar = ({ data }: { data: ServiceType | undefined }) => {
     if (!date) return false;
     const [hourString, period] = slot.split(" ");
     const hour = parseInt(hourString.split(":")[0], 10);
-    const adjustedHour = period === "PM" && hour !== 12 ? hour + 12 : period === "AM" && hour === 12 ? 0 : hour;
+    const adjustedHour =
+      period === "PM" && hour !== 12
+        ? hour + 12
+        : period === "AM" && hour === 12
+        ? 0
+        : hour;
 
     const slotDate = new Date(date);
     slotDate.setHours(adjustedHour, 0, 0, 0);
@@ -107,8 +111,7 @@ const BookingCalendar = ({ data }: { data: ServiceType | undefined }) => {
     <div className="flex mb-10 flex-col w-full items-center mt-6 md:mt-0 md:p-6">
       <Calendar
         value={date}
-        
-        onChange={handleDateChange}
+        onChange={(value) => handleDateChange(value as Date | Date[] | null)}
         className="rounded-md border"
         tileDisabled={tileDisabled}
       />

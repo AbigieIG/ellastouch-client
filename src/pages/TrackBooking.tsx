@@ -85,7 +85,13 @@ const BookingDetail: React.FC = () => {
             <strong className="text-gray-600">Price:</strong>{" "}
             {booking.service?.price}
           </div>
-          <div className="mb-2">
+         {booking.comment && (
+            <div className="mb-2">
+            <strong className="text-gray-600">Comment:</strong>{" "}
+            {booking.comment}
+          </div>
+         )}
+          <div className="mb-2 flex flex-wrap items-center gap-2">
             <strong className="text-gray-600">Address:</strong>{" "}
             <div>
               <span>{booking.address},</span>
