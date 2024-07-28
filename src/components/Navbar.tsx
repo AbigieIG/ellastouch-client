@@ -1,15 +1,34 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/images/profilepic.webp";
 import { IoPersonCircleOutline, IoMenu, IoClose } from "react-icons/io5";
+import { MdDashboard } from "react-icons/md";
+import { RiHome4Fill } from "react-icons/ri";
 import sidebar from "../assets/data/sidebar";
+import Cookies from "js-cookie";
+import apiClient from "../utils/axios";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const token = Cookies.get("token");
+  const admin = localStorage.getItem("admin");
+  const navigate = useNavigate();
+  const location = useLocation();
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const logout = async () => {
+    Cookies.remove("token");
+    localStorage.clear();
+    try {
+      apiClient.post("/logout");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {}, [token, navigate, location, admin]);
 
   return (
     <nav className="w-full z-50  top-0 bg-white ">
@@ -17,26 +36,58 @@ const Navbar = () => {
         <NavLink to="/" className="flex items-center">
           <img className="w-10 h-10 rounded-full" src={logo} alt="logo" />
           <div className="ml-2">
-            <h1 className="text-sm text-slate-600 font-semibold">Ellas Touch Mua</h1>
-            <p className="text-xs text-gray-400">Satelite Town, Lagos, Nigeria</p>
+            <h1 className="text-sm text-slate-600 font-semibold">
+              Ellas Touch Mua
+            </h1>
+            <p className="text-xs text-gray-400">
+              Satelite Town, Lagos, Nigeria
+            </p>
           </div>
         </NavLink>
-        <div className="hidden lg:flex items-center gap-4">
-          <Link
-            to="/user-login"
-            className="flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
-          >
-            <IoPersonCircleOutline />
-            <span>Login</span>
-          </Link>
-          <Link
-            to="/register"
-            className="flex items-center gap-2 text-white bg-sky-600 px-4 py-2 rounded-full"
-          >
-            <IoPersonCircleOutline />
-            <span>Sign Up</span>
-          </Link>
-        </div>
+        {token ? (
+          <div className=" hidden lg:flex items-center gap-4">
+            {admin ? (
+              <Link
+                to="/admin"
+                className="flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
+              >
+                <MdDashboard />
+                <span>Dashboard</span>
+              </Link>
+            ) : (
+              <Link
+                to="/user-page"
+                className="flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
+              >
+                <RiHome4Fill size={17} />
+                <span>Profile</span>
+              </Link>
+            )}
+            <button
+              onClick={() => logout()}
+              className="text-white bg-sky-600 px-4 py-2 rounded-full"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="hidden lg:flex items-center gap-4">
+            <Link
+              to="/user-login"
+              className="flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
+            >
+              <IoPersonCircleOutline />
+              <span>Login</span>
+            </Link>
+            <Link
+              to="/register"
+              className="flex items-center gap-2 text-white bg-sky-600 px-4 py-2 rounded-full"
+            >
+              <IoPersonCircleOutline />
+              <span>Sign Up</span>
+            </Link>
+          </div>
+        )}
         <button
           className="lg:hidden flex items-center text-2xl text-gray-700"
           onClick={toggleMenu}
@@ -62,22 +113,54 @@ const Navbar = () => {
               {item.title}
             </NavLink>
           ))}
-          <Link
-            to="/user-login"
-            className="mt-4 flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
-            onClick={() => setMenuOpen(false)}
-          >
-            <IoPersonCircleOutline />
-            <span>Login</span>
-          </Link>
-          <Link
-            to="/register"
-            className="mt-4 flex items-center gap-2 text-white bg-sky-600 px-4 py-2 rounded-full"
-            onClick={() => setMenuOpen(false)}
-          >
-            <IoPersonCircleOutline />
-            <span>Sign Up</span>
-          </Link>
+          {token ? (
+            <div className="flex items-center gap-4 mt-4">
+              {admin ? (
+                <Link
+                  to="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
+                >
+                  <MdDashboard />
+                  <span>Dashboard</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/user-page"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
+                >
+                  <RiHome4Fill size={17} />
+                  <span>Profile</span>
+                </Link>
+              )}
+              <button
+                onClick={() => logout()}
+                className="text-white bg-sky-600 px-4 py-2 rounded-full"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div>
+              <Link
+                to="/user-login"
+                className="mt-4 flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
+                onClick={() => setMenuOpen(false)}
+              >
+                <IoPersonCircleOutline />
+                <span>Login</span>
+              </Link>
+              <Link
+                to="/register"
+                className="mt-4 flex items-center gap-2 text-white bg-sky-600 px-4 py-2 rounded-full"
+                onClick={() => setMenuOpen(false)}
+              >
+                <IoPersonCircleOutline />
+                <span>Sign Up</span>
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>

@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import StepBar from "../components/Stepbar";
 import { FaAngleLeft } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import apiClient from "../utils/axios";
 
 interface FormState {
   fullName: string;
@@ -32,7 +33,7 @@ const Register: React.FC = () => {
   const [error, setError] = useState<string>("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement >
   ) => {
     const { name, value, type, checked } = e.target;
     setFormState((prevState) => ({
@@ -48,14 +49,23 @@ const Register: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formState.agreeTerms) {
-      setError("You must agree to the terms and conditions");
-    } else {
-      setError("");
-      console.log(formState);
-      navigate("/confirm");
+    try {
+      if (!formState.agreeTerms) {
+        setError("You must agree to the terms and conditions");
+      } else {
+        const res = await apiClient.post("/register", formState, {
+          withCredentials: true,
+        });
+        console.log(res);
+        setError("");
+        console.log(formState);
+        // navigate("/confirm");
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   };
 
@@ -131,12 +141,11 @@ const Register: React.FC = () => {
             </div>
             <div className="mb-4 relative">
               <PhoneInput
-                country={'ng'}
+                country={"ng"}
                 value={formState.phoneNumber}
                 onChange={handlePhoneChange}
                 inputClass="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
               />
-          
             </div>
             <div className="mb-4 relative">
               <input
@@ -242,7 +251,7 @@ const Register: React.FC = () => {
                 Address
               </label>
             </div>
-       
+
             <div className="mb-4 flex items-center">
               <input
                 type="checkbox"
@@ -261,7 +270,7 @@ const Register: React.FC = () => {
               type="submit"
               className="w-full bg-blue-600/85 text-white py-2 rounded hover:bg-blue-700/90 transition duration-300"
             >
-             Create
+              Create
             </button>
           </form>
         </div>

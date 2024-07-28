@@ -1,28 +1,12 @@
-import React, { useState } from 'react';
-
-
-interface User {
-  fullName: string;
-  phoneNumber: string;
-  email: string;
-  state: string;
-  city: string;
-  address: string;
-  zipCode: string;
-}
-
-const initialUser: User = {
-  fullName: "John Doe",
-  phoneNumber: "123-456-7890",
-  email: "john@example.com",
-  state: "California",
-  city: "Los Angeles",
-  address: "123 Main St",
-  zipCode: "90001",
-};
+import React, { useEffect, useState } from "react";
+import apiClient from "../utils/axios";
+import { UserType } from "../types";
+import { isAxiosError } from "../utils/axiosError";
+import { useNavigate } from "react-router-dom";
 
 const UserEditForm: React.FC = () => {
-  const [user, setUser] = useState<User>(initialUser);
+  const [user, setUser] = useState<UserType>({} as UserType);
+  const [error, setError] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,21 +15,46 @@ const UserEditForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission (e.g., send data to backend)
-    console.log('Updated user data:', user);
+    try {
+    const res =  apiClient.put("/users/edit", user, {
+        withCredentials: true,
+      });
+      console.log(res);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        setError(error.response.data.message || "An unexpected error occurred");
+      } else {
+        setError("An unexpected error occurred");
+      }
+    }
   };
+const navigate = useNavigate();
 
+  useEffect(() => {
+    apiClient
+      .get("/users/data", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setUser(res.data);
+        navigate("/edit");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
   return (
     <div className=" text-slate-600 min-h-screen p-8">
       <div className="bg-white  rounded-lg p-6 max-w-3xl mx-auto">
         <h2 className="text-2xl font-semibold mb-4">Edit </h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
           <div className="flex flex-col">
             <label className="font-semibold text-gray-700">Full Name</label>
             <input
               type="text"
               name="fullName"
-              value={user.fullName}
+              value={user?.fullName}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded w-full"
             />
@@ -55,7 +64,7 @@ const UserEditForm: React.FC = () => {
             <input
               type="text"
               name="phoneNumber"
-              value={user.phoneNumber}
+              value={user?.phoneNumber}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded w-full"
             />
@@ -65,7 +74,7 @@ const UserEditForm: React.FC = () => {
             <input
               type="email"
               name="email"
-              value={user.email}
+              value={user?.email}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded w-full"
             />
@@ -75,7 +84,7 @@ const UserEditForm: React.FC = () => {
             <input
               type="text"
               name="state"
-              value={user.state}
+              value={user?.state}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded w-full"
             />
@@ -85,7 +94,7 @@ const UserEditForm: React.FC = () => {
             <input
               type="text"
               name="city"
-              value={user.city}
+              value={user?.city}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded w-full"
             />
@@ -95,7 +104,7 @@ const UserEditForm: React.FC = () => {
             <input
               type="text"
               name="address"
-              value={user.address}
+              value={user?.address}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded w-full"
             />
@@ -105,7 +114,7 @@ const UserEditForm: React.FC = () => {
             <input
               type="text"
               name="zipCode"
-              value={user.zipCode}
+              value={user?.zipCode}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded w-full"
             />

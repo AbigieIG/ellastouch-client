@@ -4,6 +4,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { IoIosPeople } from "react-icons/io";
 import { IoMdPeople } from "react-icons/io";
 import { GrGallery } from "react-icons/gr";
+import { IoBookmarks } from "react-icons/io5";
 import { SidebarItem  } from "../../types";
 
 
@@ -33,6 +34,11 @@ const sidebar: SidebarItem[] = [
     title: "gallery",
     icon: GrGallery,
     link: "/gallery",
+  },
+  {
+    title: "track booking",
+    icon: IoBookmarks,
+    link: "/track-booking",
   },
   {
     title: "about us",

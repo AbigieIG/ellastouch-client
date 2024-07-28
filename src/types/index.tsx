@@ -7,25 +7,61 @@ export type MoreItem = {
   extraCharges: string[];
   terms: string[];
 };
-export interface More {
+
+
+
+export interface ServiceType {
+  id?: string;
+  name: string;
+  categoryId: string; 
+  duration: string;
+  price: number;
   description: string[];
   workingHours: string[];
   extraCharges: string[];
   terms: string[];
 }
 
-export interface Service {
-  id: number;
-  name: string;
-  duration: string;
-  price: number;
-  more: More;
+export interface UserType {
+  id?: string;
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  password?: string;
+  state: string;
+  city: string;
+  address: string;
+  zipCode: string;
+  createdAt?:  string | number | Date;
+  bookings?: BookingType[]
 }
 
-export interface Booking {
-  title: string;
-  services: Service[];
+export interface BookingType {
+  id?: string;
+  userId: string | null;
+  time?: string;
+  date?: string;
+  bookingId?: string;
+  serviceId: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  state: string;
+  city: string;
+  address: string;
+  zipCode: string;
+  user?: UserType;
+  service?: ServiceType;
+  createdAt?: string | number | Date;
 }
+
+
+export interface CategoryType {
+  id: string;
+  title: string;
+  services?: ServiceType[];
+}
+
 
 export interface AddressItem {
   title: string;
@@ -33,16 +69,28 @@ export interface AddressItem {
   link: string;
 }
 
+
+
 export interface SidebarItem {
   title: string;
   icon: IconType;
   link: string;
 }
 
-
-
-export interface Category {
-  id: number;
-  name: string;
+export interface FormState {
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  password: string;
+  state: string;
+  city: string;
+  address: string;
+  zipCode: string;
+  agreeTerms: boolean;
 }
 
+ export interface GalleryItem {
+  id: string;
+  url: string;
+  category: string;
+}

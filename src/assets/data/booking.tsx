@@ -1,6 +1,6 @@
-import { Booking } from "../../types";
+// import { Booking } from "../../types";
 
-const bookings: Booking[] = [
+const bookings = [
   {
     title: "STUDIO WALK-IN SESSION",
     services: [

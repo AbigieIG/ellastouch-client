@@ -1,20 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import StepBar from "../components/Stepbar";
 import { useNavigate } from "react-router-dom";
 import { FaAngleLeft } from "react-icons/fa6";
 import logo from "../assets/images/profilepic.webp";
+import { BookingType } from "../types";
+import apiClient from "../utils/axios";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { bank } from "../assets/data/address";
 
 const Confirmation: React.FC = () => {
   const [active, setActive] = useState(false);
   const navigate = useNavigate();
-  const [data] = useState(() => {
-    const savedData = localStorage.getItem("booking");
+  const [data, setData] = useState<BookingType>({} as BookingType);
+  const [bookId] = useState(() => {
+    const savedData = localStorage.getItem("bookId");
     return savedData ? JSON.parse(savedData) : {};
   });
 
+  useEffect(() => {
+    apiClient
+      .get(`bookings/${bookId}`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setData(res.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [bookId]);
+
+  const handleSaveAsImage = () => {
+    html2canvas(document.querySelector("#confirmation")!).then((canvas) => {
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = "confirmation.png";
+      link.click();
+    });
+  };
+
+  const handleSaveAsPDF = () => {
+    html2canvas(document.querySelector("#confirmation")!).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+      pdf.save("confirmation.pdf");
+    });
+  };
+
   return (
     <div className="px-4 mb-7 md:px-0">
-      <div className="flex mt-5  items-center justify-between">
+      <div className="flex mt-5 items-center justify-between">
         <button
           onClick={() => navigate(-1)}
           className="flex md:px-5 items-center gap-2"
@@ -22,12 +59,12 @@ const Confirmation: React.FC = () => {
           <FaAngleLeft className="text-gray-500" size={20} />
           <span>Confirmation</span>
         </button>
-        <div className="flex items-center justify-between relative  px-10">
+        <div className="flex items-center justify-between relative px-10">
           <p
             onClick={() => setActive(!active)}
             className="text-xs cursor-pointer text-sky-600 capitalize"
           >
-            booking policy
+            Booking Policy
           </p>
           {active && (
             <div className="fixed flex justify-center px-5 items-center top-0 left-0 w-full h-full bg-slate-600/20">
@@ -44,13 +81,13 @@ const Confirmation: React.FC = () => {
                   *Please endeavor to read Service Description carefully (Tap
                   "more").
                 </p>
-                <p> *REFUND is conditional.</p>
+                <p>*REFUND is conditional.</p>
                 <div className="w-full flex justify-end">
                   <button
                     onClick={() => setActive(!active)}
                     className="text-white capitalize bg-sky-600 py-2 px-5 rounded mt-3 w-20"
                   >
-                    okay
+                    Okay
                   </button>
                 </div>
               </div>
@@ -59,39 +96,64 @@ const Confirmation: React.FC = () => {
         </div>
       </div>
       <StepBar currentStep={4} />
-
-      <div className="md:px-10 mt-10">
-        <div className="flex flex-col justify-center items-center  md:flex-row gap-5">
-          <img className="md:w-20 md:h-20 h-10 w-10  rounded-full" src={logo} alt="" />
+      <div id="confirmation" className="md:px-10 mt-10">
+        <div className="flex flex-col justify-center items-center md:flex-row gap-5">
+          <img
+            className="md:w-20 md:h-20 h-10 w-10 rounded-full"
+            src={logo}
+            alt="Profile"
+          />
           <div className="text-sm text-slate-600 flex flex-col gap-5">
-            <h1 className=" text-slate-700 text-lg">
-              You are booked with Zee Ellas Touch Mua
+            <h1 className="text-slate-700 text-lg">
+              You are booked with Ellas Touch Mua
             </h1>
-            <div className="flex  items-center gap-10">
+            <div className="flex items-center gap-10">
               <span className="text-slate-400">Service</span>
-              <span>{data.name}</span>
+              <span>{data.service?.name}</span>
             </div>
             <div className="flex items-center gap-10">
               <span className="text-slate-400">Date & time</span>
               <span>
-                {data.date} , {data.time}
+                {data.date}, {data.time}
               </span>
             </div>
             <div className="flex items-center gap-10">
               <span className="text-slate-400">Booking ID</span>
-              <span>XUHN4VVJ</span>
+              <span>{data.bookingId}</span>
             </div>
           </div>
         </div>
         <div className="flex items-center justify-center w-full mt-7">
-          <button onClick={() => navigate("/")} className="my-4 border text-slate-500 py-3 px-10 rounded">
+          <button
+            onClick={() => navigate("/")}
+            className="my-4 border text-slate-500 py-3 px-10 rounded"
+          >
             Book another appointment
           </button>
         </div>
+        <div className="flex justify-center gap-4 mt-5">
+          <button
+            onClick={handleSaveAsImage}
+            className="my-4 border text-slate-500 py-2 px-5 rounded"
+          >
+            Save as Image
+          </button>
+          <button
+            onClick={handleSaveAsPDF}
+            className="my-4 border text-slate-500 py-2 px-5 rounded"
+          >
+            Save as PDF
+          </button>
+        </div>
         <p className="text-sm w-full text-sky-600 leading-6 text-center mt-7">
-          Kindly proceed to make payment into " 1990050715 ECO BANK ZEE BEAUTY
-          ROYALE ". Then send Payment receipt to our WHATSAPP line by clicking
-          on this details. Thank you!
+          Kindly proceed to make payment into "{bank.account}  {bank.bank}{" "}
+          {bank.name}
+          ". Then send Payment receipt to our{" "}
+          <a href={bank.link} className="underline" target="_blank">
+            {" "}
+            WHATSAPP line by clicking on this details.
+          </a>{" "}
+          Thank you!
         </p>
       </div>
     </div>

@@ -1,46 +1,109 @@
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import gallery from '../assets/data/gallery'; 
-import Modal from './Modal'; 
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState, useEffect } from "react";
+import { useDropzone } from "react-dropzone";
+import Modal from "./Modal";
+import apiClient from "../utils/axios";
+import categories from "../assets/data/category.json"
+import { GalleryItem } from "../types/index"
+import Spinner from "./Spinner";
 
-interface GalleryItem {
-  id: string;
-  image: string;
-  category: string;
-}
 
-const initialGallery: GalleryItem[] = gallery.map(item => ({ ...item, id: uuidv4() }));
 
 const GalleryAdminPage: React.FC = () => {
-  const [items, setItems] = useState<GalleryItem[]>(initialGallery);
+  const [items, setItems] = useState<GalleryItem[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [form, setForm] = useState<{ image: string; category: string }>({ image: '', category: '' });
+  const [form, setForm] = useState<{ category: string; image: string }>({
+    category: "",
+    image: "",
+  });
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState<{ [key: string]: boolean }>({
+    fetch: false,
+    save: false,
+    delete: false,
+  });
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    setLoading((prev) => ({ ...prev, fetch: true }));
+    try {
+      const response = await apiClient.get("/galleries");
+      setItems(response.data);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+    } finally {
+      setLoading((prev) => ({ ...prev, fetch: false }));
+    }
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleAddOrEditItem = () => {
-    if (editingItemId) {
-      setItems(items.map(item =>
-        item.id === editingItemId ? { ...item, ...form } : item
-      ));
-      setEditingItemId(null);
+  const handleAddOrEditItem = async () => {
+    const formData = new FormData();
+    if (imageFile) {
+      formData.append("image", imageFile);
     } else {
-      setItems([...items, { id: uuidv4(), ...form }]);
+      formData.append("image", form.image);
     }
-    setForm({ image: '', category: '' });
+    formData.append("category", form.category);
+
+    setLoading((prev) => ({ ...prev, save: true }));
+    try {
+      if (editingItemId) {
+        await apiClient.put(`/galleries/${editingItemId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        },);
+        setItems(
+          items.map((item) =>
+            item.id === editingItemId
+              ? { ...item, category: form.category }
+              : item
+          )
+        );
+        setEditingItemId(null);
+      } else {
+        const response = await apiClient.post("/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        });
+        setItems([...items, response.data]);
+      }
+      setForm({ category: "", image: "" });
+      setImageFile(null);
+    } catch (error) {
+      console.error("Error adding or editing item:", error);
+    } finally {
+      setLoading((prev) => ({ ...prev, save: false }));
+    }
   };
 
   const handleEdit = (item: GalleryItem) => {
-    setForm({ image: item.image, category: item.category });
+    setForm({ category: item.category, image: item.url });
     setEditingItemId(item.id);
   };
 
-  const handleDelete = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
+  const handleDelete = async (id: string) => {
+    setLoading((prev) => ({ ...prev, delete: true }));
+    try {
+      await apiClient.delete(`/galleries/${id}`, {
+        withCredentials: true,
+      });
+      setItems(items.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    } finally {
+      setLoading((prev) => ({ ...prev, delete: false }));
+    }
   };
 
   const handlePreview = (image: string) => {
@@ -54,6 +117,7 @@ const GalleryAdminPage: React.FC = () => {
   const handleDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setForm({ ...form, image: reader.result as string });
@@ -64,44 +128,62 @@ const GalleryAdminPage: React.FC = () => {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: handleDrop,
-    // accept: 'image/*',
   });
 
   return (
     <div className="container mx-auto p-4 md:p-10">
-      {/* <h1 className="text-sm text-slate-600 font-bold mb-6">Gallery Admin</h1> */}
-      
       <div className="mb-6">
         <div className="flex flex-col gap-4">
-          <div {...getRootProps()} className="p-4 border border-dashed rounded flex items-center justify-center cursor-pointer">
+          <div
+            {...getRootProps()}
+            className="p-4 border border-dashed rounded flex items-center justify-center cursor-pointer"
+          >
             <input {...getInputProps()} />
-            {form.image ? (
-              <img src={form.image} alt="Preview" className="w-24 h-24 object-cover rounded" />
+            {imageFile ? (
+              <img
+                src={URL.createObjectURL(imageFile)}
+                alt="Preview"
+                className="w-24 h-24 object-cover rounded"
+              />
+            ) : form.image ? (
+              <img
+                src={form.image}
+                alt="Preview"
+                className="w-24 h-24 object-cover rounded"
+              />
             ) : (
-              <p className="text-gray-600">Drop an image here or click to upload</p>
+              <p className="text-gray-600">
+                Drop an image here or click to upload
+              </p>
             )}
           </div>
-          <input
-            type="text"
-            name="image"
-            value={form.image}
-            onChange={handleFormChange}
-            placeholder="Image URL (or upload image)"
-            className="p-2 border rounded"
-          />
-          <input
-            type="text"
+          <select
             name="category"
             value={form.category}
             onChange={handleFormChange}
-            placeholder="Category"
             className="p-2 border rounded"
-          />
+          >
+            <option disabled={true} value="">
+              Select Category
+            </option>
+            {categories.map((category, i) => (
+              <option key={i} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
           <button
             onClick={handleAddOrEditItem}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="px-4 py-2 bg-blue-600 text-white rounded flex items-center justify-center"
+            disabled={loading.save}
           >
-            {editingItemId ? 'Update Item' : 'Add Item'}
+            {loading.save ? (
+              <Spinner />
+            ) : editingItemId ? (
+              "Update Item"
+            ) : (
+              "Add Item"
+            )}
           </button>
         </div>
       </div>
@@ -110,10 +192,10 @@ const GalleryAdminPage: React.FC = () => {
         {items.map((item) => (
           <div key={item.id} className="relative">
             <img
-              src={item.image}
+              src={item.url}
               alt={`Gallery item ${item.id}`}
               className="w-full h-auto object-cover rounded-lg shadow-md cursor-pointer"
-              onClick={() => handlePreview(item.image)}
+              onClick={() => handlePreview(item.url)}
             />
             <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-b-lg">
               {item.category}
@@ -127,18 +209,16 @@ const GalleryAdminPage: React.FC = () => {
             <button
               onClick={() => handleDelete(item.id)}
               className="absolute top-2 right-12 text-red-500"
+              disabled={loading.delete}
             >
-              Delete
+              {loading.delete ? <Spinner /> : "Delete"}
             </button>
           </div>
         ))}
       </div>
 
       {selectedImage && (
-        <Modal
-          image={selectedImage}
-          onClose={handleClosePreview}
-        />
+        <Modal image={selectedImage} onClose={handleClosePreview} />
       )}
     </div>
   );

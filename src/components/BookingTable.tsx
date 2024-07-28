@@ -1,36 +1,40 @@
-// src/components/BookingTable.tsx
+
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
-import bookings from "../assets/data/userBooking";
 import { useNavigate } from 'react-router-dom';
+import apiClient from "../utils/axios";
+import { BookingType } from "../types";
 
-interface Booking {
-  id: number;
-  name: string;
-  date: string;
-  time: string;
-  duration: string;
-  price: number;
-  username: string;
-  email: string;
-}
+
 
 const BookingTable: React.FC = () => {
+  const [bookings, setBookings] = useState<BookingType[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterDate, setFilterDate] = useState<Date | null>(null);
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>(bookings);
+  const [filteredBookings, setFilteredBookings] = useState<BookingType[]>(bookings);
   const [currentPage, setCurrentPage] = useState<number>(1);
+
   const itemsPerPage = 5;
+  
+  useEffect(() => {
+    apiClient.get("/bookings", {
+      withCredentials: true,
+    }).then((res) => {
+    setBookings(res.data)  
+    }).catch((error) => {
+      console.error(error);
+    })
+  }, []);
 
   useEffect(() => {
-    let results = bookings.filter(
+    let results = bookings?.filter(
       (booking) =>
-        booking.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.email.toLowerCase().includes(searchTerm.toLowerCase())
+        booking?.service?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking?.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (filterDate) {
@@ -40,7 +44,11 @@ const BookingTable: React.FC = () => {
 
     setFilteredBookings(results);
     setCurrentPage(1); 
-  }, [searchTerm, filterDate]);
+  }, [searchTerm, filterDate, bookings]);
+
+ 
+
+
 
   const handleClick = (direction: string) => {
     if (direction === "next" && currentPage < Math.ceil(filteredBookings.length / itemsPerPage)) {
@@ -90,16 +98,16 @@ const BookingTable: React.FC = () => {
             </tr>
           </thead>
           <tbody className="w-full">
-            {currentBookings.map((booking) => (
-              <tr  onClick={() => navigate("/book-details")} className="bg-white border-b cursor-pointer" key={booking.id}>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking.date}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking.time}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking.duration}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking.price}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking.username}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking.email}</td>
+            {currentBookings?.map((booking, i) => (
+              <tr  onClick={() => navigate(`/bookings/${booking.id}`)} className="bg-white border-b cursor-pointer" key={booking.id}>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{i + 1}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.service?.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.date}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.time}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.service?.duration}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.service?.price}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.fullName}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.email}</td>
               </tr>
             ))}
           </tbody>

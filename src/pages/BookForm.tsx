@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import StepBar from "../components/Stepbar";
 import { FaAngleLeft } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
-
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import apiClient from "../utils/axios";
+import { UserType } from "../types";
+import { AxiosResponse } from "axios";
 
 interface FormState {
   fullName: string;
+  userId: string | null;
+  time: string;
+  date: string;
+  serviceId: string;
   phoneNumber: string;
   email: string;
   state: string;
@@ -15,43 +21,94 @@ interface FormState {
   address: string;
   zipCode: string;
   comment: string;
-  agreeTerms: boolean;
+  agreeTerms?: boolean;
 }
 
 const Register: React.FC = () => {
-  const [formState, setFormState] = useState<FormState>({
-    fullName: '',
-    phoneNumber: '',
-    email: '',
-    state: '',
-    city: '',
-    address: '',
-    zipCode: '',
-    comment: '',
-    agreeTerms: false,
+  const [user, setUser] = useState<UserType>({} as UserType);
+  const [booking] = useState(() => {
+    const savedBooking = localStorage.getItem("booking");
+    return savedBooking ? JSON.parse(savedBooking) : {};
   });
-  const [error, setError] = useState<string>('');
 
+  const [formState, setFormState] = useState<FormState>({
+    userId: null,
+    time: booking.time || "",
+    date: booking.date || "",
+    serviceId: booking.id || "",
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    state: "",
+    city: "",
+    address: "",
+    zipCode: "",
+    comment: "",
+  });
+
+  useEffect(() => {
+    apiClient
+      .get("/users/data", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setUser(res.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (user.id) {
+      setFormState((prevState) => ({
+        ...prevState,
+        userId: user.id || "",
+        fullName: user.fullName || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        state: user.state || "",
+        city: user.city || "",
+        address: user.address || "",
+        zipCode: user.zipCode || "",
+      }));
+    }
+  }, [user]);
+
+  const [error, setError] = useState<string>("");
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const isCheckbox =
+      e.target instanceof HTMLInputElement && e.target.type === "checkbox";
+    const checked = isCheckbox
+      ? (e.target as HTMLInputElement).checked
+      : undefined;
     setFormState((prevState) => ({
       ...prevState,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
+
   const [active, setActive] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formState.agreeTerms) {
-      setError('You must agree to the terms and conditions');
-    } else {
-      setError('');
-      console.log(formState);
-      navigate("/confirm")
+      setError("Please agree to our terms and conditions");
+      return;
+    }
+    try {
+      const res: AxiosResponse = await apiClient.post("/bookings", formState);
+      if(res.status === 201) {  
+        localStorage.setItem("bookId", JSON.stringify(res.data.id));
+        navigate("/confirm");
+
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -61,12 +118,6 @@ const Register: React.FC = () => {
       phoneNumber: value,
     }));
   };
-
-  const [data] = useState(() => {
-    const savedData = localStorage.getItem("booking");
-    return savedData ? JSON.parse(savedData) : {};
-  });
-
 
   return (
     <>
@@ -114,16 +165,20 @@ const Register: React.FC = () => {
           )}
         </div>
       </div>
-      <div className="px-4 md:px-0"><StepBar currentStep={3} /></div>
+      <div className="px-4 md:px-0">
+        <StepBar currentStep={3} />
+      </div>
 
       <div className="md:px-5 w-full mt-7 px-4 ">
         <div className="md:px-10 bg-slate-100/70  w-full py-4">
           <div className="flex mt-1 text-gray-500 gap-2 items-center text-xs">
-          <p className="text-gray-800 text-sm">{data?.name}</p>
-            <p>{data?.duration} .</p>
-            <p>₦{data?.price} .</p>
+            <p className="text-gray-800 text-sm">{booking?.name}</p>
+            <p>{booking?.duration} .</p>
+            <p>₦{booking?.price} .</p>
           </div>
-          <p className="text-gray-500 text-xs">with Ellas Touch Mua on {data.date}, {data.time}</p>
+          <p className="text-gray-500 text-xs">
+            with Ellas Touch Mua on {booking.date}, {booking.time}
+          </p>
         </div>
       </div>
       <div className="flex  justify-center mt-7 h-full overflow-auto px-4 md:px-0">
@@ -147,19 +202,12 @@ const Register: React.FC = () => {
               </label>
             </div>
             <div className="mb-4 relative">
-            <PhoneInput
-                country={'ng'}
+              <PhoneInput
+                country={"ng"}
                 value={formState.phoneNumber}
                 onChange={handlePhoneChange}
                 inputClass="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
               />
-
-              {/* <label
-                htmlFor="phoneNumber"
-                className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
-              >
-                Phone Number
-              </label> */}
             </div>
             <div className="mb-4 relative">
               <input
@@ -282,7 +330,7 @@ const Register: React.FC = () => {
               type="submit"
               className="w-full bg-blue-600/85 text-white py-2 rounded hover:bg-blue-700/90 transition duration-300"
             >
-              Next
+              Book Service
             </button>
           </form>
         </div>

@@ -1,16 +1,28 @@
-import { useState } from "react";
-import service from "../assets/data/service";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "../components/Calender";
 import StepBar from "../components/Stepbar";
 import { FaAngleLeft } from "react-icons/fa6";
+import { ServiceType } from "../types";
+import apiClient from "../utils/axios";
 
 const Booking = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const data = service.find((e) => e.id === Number(id));
-  console.log(data);
+  const [data, setData] = useState<ServiceType>({} as ServiceType);
   const [active, setActive] = useState(false);
+
+
+  useEffect(() => {
+    apiClient
+      .get(`/services/${id}`)
+      .then((res) => {
+        setData(res.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [id]);
 
   return (
     <div className="w-full   px-4 md:px-0 ">

@@ -1,14 +1,17 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import StepBar from "../components/Stepbar";
 import { useNavigate } from "react-router-dom";
 import { FaAngleLeft } from "react-icons/fa6";
+import apiClient from "../utils/axios";
+import { isAxiosError } from "../utils/axiosError";
 
 const Login: React.FC = () => {
   const [form, setForm] = useState({
-    username: "",
-    password: ""
+    email: "",
+    password: "",
   });
+
   const [error, setError] = useState<string>("");
   const [active, setActive] = useState(false);
   const navigate = useNavigate();
@@ -17,19 +20,28 @@ const Login: React.FC = () => {
     const { name, value } = e.target;
     setForm((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (form.username === "" || form.password === "") {
-      setError("Username and password are required");
-    } else {
+    try {
+      if (form.email === "" || form.password === "") {
+        setError("email and password are required");
+      } else {
+        await apiClient.post("/login", form, {
+          withCredentials: true,
+        });
+        navigate("/book-form");
+      }
       setError("");
-      console.log("Username:", form.username);
-      console.log("Password:", form.password);
-      navigate("/confirm")
+    } catch (error) {
+      if (isAxiosError(error)) {
+        setError(error.response.data.message || "An unexpected error occurred");
+      } else {
+        setError("An unexpected error occurred");
+      }
     }
   };
 
@@ -79,18 +91,20 @@ const Login: React.FC = () => {
           )}
         </div>
       </div>
-      <div className="px-4 md:px-0"><StepBar currentStep={3} /></div>
+      <div className="px-4 md:px-0">
+        <StepBar currentStep={3} />
+      </div>
       <div className="flex justify-center min-h-screen px-4 ">
         <div className="bg-white p-8 rounded w-full max-w-md">
           <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-5 relative">
               <input
-                type="text"
-                id="username"
-                name="username"
+                type="email"
+                id="email"
+                name="email"
                 className="w-full px-4  py-2 border rounded focus:outline-none focus:ring-1 focus:ring-blue-600/70 peer"
-                value={form.username}
+                value={form.email}
                 onChange={handleChange}
                 placeholder=" "
               />
@@ -137,7 +151,7 @@ const Login: React.FC = () => {
               </Link>
             </p>
             <p className="text-gray-600 mt-2">
-              <Link to="/skip-login" className="text-blue-600 hover:underline">
+              <Link to="/book-form" className="text-blue-600 hover:underline">
                 Skip login process
               </Link>
             </p>

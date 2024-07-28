@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useNavigate } from "react-router-dom";
-import { Service } from "../types/index";
+import { ServiceType } from "../types/index";
+import Cookies from "js-cookie";
 
 interface Booking {
-  id: number | undefined;
+  id: string | undefined;
   name: string | undefined;
   duration: string | undefined;
   price: number | undefined;
@@ -13,11 +14,12 @@ interface Booking {
   time: string;
 }
 
-const BookingCalendar = ({ data }: { data: Service | undefined }) => {
+const BookingCalendar = ({ data }: { data: ServiceType | undefined }) => {
   const [date, setDate] = useState<Date | null>(new Date());
   const [slots, setSlots] = useState<string[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const token = Cookies.get("token");
 
   const navigate = useNavigate();
 
@@ -30,6 +32,7 @@ const BookingCalendar = ({ data }: { data: Service | undefined }) => {
     }
     setSlots(newSlots);
   }, []);
+
 
   const handleDateChange = (newDate: Date | Date[] | null) => {
     if (newDate instanceof Date) {
@@ -61,7 +64,11 @@ const BookingCalendar = ({ data }: { data: Service | undefined }) => {
     setBookings([...bookings, newBooking]);
     setSelectedSlot(null);
     localStorage.setItem("booking", JSON.stringify(newBooking));
-    navigate("/login");
+    if(token){
+      navigate("/book-form");
+    }else{
+      navigate("/login");
+    }
   };
 
   const isSlotBooked = (slot: string): boolean => {
@@ -100,6 +107,7 @@ const BookingCalendar = ({ data }: { data: Service | undefined }) => {
     <div className="flex mb-10 flex-col w-full items-center mt-6 md:mt-0 md:p-6">
       <Calendar
         value={date}
+        
         onChange={handleDateChange}
         className="rounded-md border"
         tileDisabled={tileDisabled}

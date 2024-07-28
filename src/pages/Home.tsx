@@ -1,16 +1,18 @@
-import Carousel from "../components/Carousel";
-import sample from "../assets/images/img-5207.webp";
+import Accordion from "../components/Accordion";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { FaAngleRight } from "react-icons/fa6";
+// import { Link } from "react-router-dom";
+// import { FaAngleRight } from "react-icons/fa6";
+// import sample from "../assets/images/img-5207.webp";
+import Carousel from "../components/Carousel";
+
 
 const Home = () => {
   const [active, setActive] = useState(false);
 
   return (
-    <div className=" w-full  lg:mt-5">
+    <div className="w-full overflow-x-hidden  lg:mt-5">
       <div className="md:px-10 items-center gap-3">
-        <div className="relative w-full h-[20rem] mb-4">
+        {/* <div className="relative w-full h-[20rem] mb-4">
           <img
             className="w-full h-full object-cover md:rounded-md"
             src={sample}
@@ -23,7 +25,8 @@ const Home = () => {
             <span> Samples</span>
             <FaAngleRight size={15} />
           </Link>
-        </div>
+        </div> */}
+         <Carousel  />
         <div className="px-4 md:px-0">
           <p className="text-sm leading-7 text-slate-600">
             <b className=" font-bold"> Ellas Touch Mua </b>is a Nigerian owned
@@ -72,7 +75,8 @@ const Home = () => {
           </div>
         )}
       </div>
-      <Carousel />
+     
+      <Accordion />
     </div>
   );
 };

@@ -4,7 +4,12 @@ import { MdEmail } from "react-icons/md";
 import { FaSquareInstagram } from "react-icons/fa6";
 import { AddressItem } from "../../types/index";
 
-
+interface Bank {
+  account: number,
+  name: string,
+  bank: string
+  link: string
+}
 
 const address: AddressItem[] = [
   {
@@ -15,7 +20,7 @@ const address: AddressItem[] = [
   {
     title: "+234 8181099812",
     icon: FaPhone,
-    link: "08181099812",
+    link: "tel:+2348181099812",
   },
   {
     title: "email",
@@ -28,5 +33,13 @@ const address: AddressItem[] = [
     link: "",
   },
 ];
+
+export const bank: Bank = {
+  account: 1990050715,
+  name: "ZEE BEAUTY ROYALE",
+  bank: "ECO BANK",
+  link: ""
+
+};
 
 export default address;

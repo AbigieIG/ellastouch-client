@@ -13,7 +13,7 @@ const Sidebar = () => {
             return (
               <div className="flex items-center gap-2 text-slate-600 py-2" key={i}>
                 <add.icon className="text-slate-400/50" size={20} />
-                <Link className="text-sky-600" to={add.link}>{add.title}</Link>
+                <a className="text-sky-600" target="_blank" href={add.link}>{add.title}</a>
               </div>
             );
           })}

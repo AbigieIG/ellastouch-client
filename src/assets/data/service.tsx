@@ -1,6 +1,6 @@
-import { Service } from "../../types";
+// import { Service } from "../../types";
 
-const service: Service[] = [
+const service = [
   {
     id: 1,
     name: "Studio Glam Only",

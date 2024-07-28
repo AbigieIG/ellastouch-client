@@ -1,76 +1,124 @@
-import React, { useState } from "react";
-import { More, Service } from "../types/index";
+import React, { useState, useEffect } from "react";
+import { ServiceType, CategoryType } from "../types/index";
+import apiClient from "../utils/axios";
+import { useNavigate } from "react-router-dom";
 
-interface ServiceFormProps {
-  service: Service;
-  onSubmit: (updatedService: Service) => void;
-}
+const ServiceForm: React.FC = () => {
+  const [formData, setFormData] = useState<ServiceType>({
+    name: "",
+    categoryId: "",
+    duration: "",
+    price: 0,
+    description: [],
+    workingHours: [],
+    extraCharges: [],
+    terms: [],
+  });
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const navigate = useNavigate();
 
-const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
-  const [formData, setFormData] = useState<Service>(service);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apiClient.get("/categories");
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({
+      ...formData,
+      [name]: name === "price" ? parseInt(value) : value,
+    });
   };
 
   const handleMoreChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
-    key: keyof More
+    key: keyof Omit<ServiceType, "name" | "categoryId" | "duration" | "price">
   ) => {
     const { value } = e.target;
     setFormData({
       ...formData,
-      more: {
-        ...formData.more,
-        [key]: value.split("\n"),
-      },
+      [key]: value.split("\n"),
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(formData);
-    console.log(formData);
+    try {
+    const res =  await apiClient.post("/services", formData, {
+      withCredentials: true,
+    });
+      if(res.status === 201) {
+        alert("Service created successfully");
+        localStorage.setItem("activeTab", "service");
+        navigate("/admin")
+        setFormData({
+          name: "",
+          categoryId: "",
+          duration: "",
+          price: 0,
+          description: [],
+          workingHours: [],
+          extraCharges: [],
+          terms: [],
+        })
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
+
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto">
-      <h2 className="text-lg text-slate-700 font-semibold mb-4">
-        {" "}
-        Create Service
-      </h2>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
         <div className="mb-4 relative">
           <input
             type="text"
-            id="service"
-            name="service"
+            id="name"
+            name="name"
+            required
             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
-            value={formData?.name}
+            value={formData.name || ""}
             onChange={handleChange}
             placeholder=" "
           />
           <label
-            htmlFor="service"
+            htmlFor="name"
             className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
           >
             Service
           </label>
         </div>
         <div className="mb-4 relative">
-          <select className="lowercase w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer ">
-            <option value="">STUDIO WALK-IN SESSION</option>
-            <option value="">MAINLAND HOME SERVICE SESSION</option>
-            <option value="">ISLAND HOME SERVICE SESSION</option>
-            <option value="">PRE WEDDING SHOOTS</option>
-            <option value="">INTRODUCTION/COURT /REGISTRY</option>
-            <option value="">BRIDAL MAKEUP/WEDDING PACKAGES</option>
+          <select
+            name="categoryId"
+            className="lowercase w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
+            value={formData.categoryId || ""}
+            required
+            onChange={handleChange}
+          >
+            <option disabled={true} value="">
+              Select Category
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.title}
+              </option>
+            ))}
           </select>
           <label
-            htmlFor="service"
+            htmlFor="categoryId"
             className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
           >
             Category
@@ -78,19 +126,20 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
         </div>
         <div className="mb-4 relative">
           <input
-            type="text"
+            type="number"
             id="price"
             name="price"
+            required
             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
-            value={formData?.price}
+            value={formData.price || ""}
             onChange={handleChange}
             placeholder=" "
           />
           <label
-            htmlFor="email"
+            htmlFor="price"
             className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
           >
-            price
+            Price
           </label>
         </div>
         <div className="mb-4 relative">
@@ -98,8 +147,9 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             type="text"
             id="duration"
             name="duration"
+            required
             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
-            value={formData?.duration}
+            value={formData.duration || ""}
             onChange={handleChange}
             placeholder=" "
           />
@@ -107,7 +157,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             htmlFor="duration"
             className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
           >
-            duration
+            Duration
           </label>
         </div>
         <div className="mb-4 relative">
@@ -115,7 +165,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             id="description"
             name="description"
             className="w-full px-4 h-20 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
-            value={formData?.more?.description?.join("\n")}
+            value={formData.description?.join("\n") || ""}
             onChange={(e) => handleMoreChange(e, "description")}
             placeholder=" "
           />
@@ -123,7 +173,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             htmlFor="description"
             className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
           >
-            description
+            Description
           </label>
         </div>
         <div className="mb-4 relative">
@@ -131,7 +181,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             id="workingHours"
             name="workingHours"
             className="w-full px-4 py-2 h-20 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
-            value={formData?.more?.workingHours?.join("\n")}
+            value={formData.workingHours?.join("\n") || ""}
             onChange={(e) => handleMoreChange(e, "workingHours")}
             placeholder=" "
           />
@@ -139,7 +189,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             htmlFor="workingHours"
             className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
           >
-            workingHours
+            Working Hours
           </label>
         </div>
         <div className="mb-4 relative">
@@ -147,7 +197,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             id="extraCharges"
             name="extraCharges"
             className="w-full px-4 py-2 border h-20 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
-            value={formData?.more?.extraCharges?.join("\n")}
+            value={formData.extraCharges?.join("\n") || ""}
             onChange={(e) => handleMoreChange(e, "extraCharges")}
             placeholder=" "
           />
@@ -155,7 +205,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             htmlFor="extraCharges"
             className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
           >
-            extraCharges
+            Extra Charges
           </label>
         </div>
         <div className="mb-4 relative">
@@ -163,7 +213,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             id="terms"
             name="terms"
             className="w-full px-4 py-2 border h-20 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
-            value={formData?.more?.terms?.join("\n")}
+            value={formData.terms?.join("\n") || ""}
             onChange={(e) => handleMoreChange(e, "terms")}
             placeholder=" "
           />
@@ -171,16 +221,15 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onSubmit }) => {
             htmlFor="terms"
             className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] left-4 peer-focus:left-1 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
           >
-            terms
+            Terms
           </label>
         </div>
-
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-2">
           <button
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Save Changes
+            Create Service
           </button>
         </div>
       </form>

@@ -14,7 +14,7 @@ const More = ({
   title: string;
   price: number;
   duration: string;
-  id: string;
+  id: string | undefined;
 }) => {
   const [active, seActive] = useState(false);
   const { description, terms, workingHours, extraCharges } = data;

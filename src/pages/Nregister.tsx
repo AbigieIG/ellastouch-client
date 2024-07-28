@@ -3,18 +3,13 @@ import { useNavigate } from "react-router-dom";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { Link } from "react-router-dom";
+import apiClient from "../utils/axios";
+import { FormState } from "../types";
+import { isAxiosError } from "../utils/axiosError";
+import { AxiosResponse } from "axios";
 
-interface FormState {
-  fullName: string;
-  phoneNumber: string;
-  email: string;
-  password: string;
-  state: string;
-  city: string;
-  address: string;
-  zipCode: string;
-  agreeTerms: boolean;
-}
+
+
 
 const Register: React.FC = () => {
   const [formState, setFormState] = useState<FormState>({
@@ -31,7 +26,7 @@ const Register: React.FC = () => {
   const [error, setError] = useState<string>("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement >
   ) => {
     const { name, value, type, checked } = e.target;
     setFormState((prevState) => ({
@@ -47,18 +42,39 @@ const Register: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const navigate = useNavigate();
+
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formState.agreeTerms) {
-      setError("You must agree to the terms and conditions");
-    } else {
-      setError("");
-      console.log(formState);
-      navigate("/confirm");
+    try {
+      if (!formState.agreeTerms) {
+        setError("You must agree to the terms and conditions");
+      } else {
+        const res: AxiosResponse = await apiClient.post("/users", formState, {
+          withCredentials: true,
+        });
+        console.log(res);
+        setError("");
+       if(res.status === 201){  
+        navigate("/user-login")
+       }
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        setError(error.response.data.message || "An unexpected error occurred");
+      } else {
+        setError("An unexpected error occurred");
+      }
+      console.error(error); // Log the error for debugging purposes
     }
   };
 
-  const navigate = useNavigate();
+  // Type guard to check if the error is an Axios error
+
+
+
 
   return (
     <>

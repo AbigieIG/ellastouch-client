@@ -3,21 +3,13 @@ import { useEffect, useState } from "react";
 import { FaAngleRight } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import apiClient from "../utils/axios";
+import { ServiceType } from "../types";
 
-interface ServiceType {
-  id: string;
-  name: string;
-  duration: string;
-  price: number;
-  description: string[];
-  workingHours: string[];
-  extraCharges: string[];
-  terms: string[];
-}
+
 const Services = () => {
 
   const [ services, setServices ] = useState<ServiceType[] | null >([]);
-  async function fetchUsers() {
+  async function fetchServices() {
     try {
       const response = await apiClient.get("/services");
       setServices(response.data)
@@ -29,7 +21,7 @@ const Services = () => {
   }
 
   useEffect(() => {
-    fetchUsers();
+    fetchServices();
   }, []);
 
 

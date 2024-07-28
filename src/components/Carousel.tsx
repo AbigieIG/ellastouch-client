@@ -1,106 +1,59 @@
-import {  useEffect, useState } from "react";
-// import bookings from "../assets/data/booking";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
-import More from "./More";
-import { NavLink } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { Link } from "react-router-dom";
+import { FaAngleRight } from "react-icons/fa";
 import apiClient from "../utils/axios";
+import { GalleryItem } from "../types";
 
-
-interface ServiceType {
-  id: string;
-  name: string;
-  duration: string;
-  price: number;
-  description: string[];
-  workingHours: string[];
-  extraCharges: string[];
-  terms: string[];
-}
-
-interface CategoryType {
-  id?: string;
-  title: string;
-  services: ServiceType[];
-}
-const Carousel = () => {
-  const [active, setActive] = useState<number | null>(null);
-  const toggleActive = (index: number) => {
-    setActive(active === index ? null : index);
+const Carousel: React.FC = () => {
+  const settings = {
+    dots: false,
+    arrows: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 7000,
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
-
-
-  const [ category, setcategory ] = useState<CategoryType [] | null >([]);
-  async function fetchUsers() {
-    try {
-      const response = await apiClient.get("/categories");
-      setcategory(response.data)
-
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      throw error;
-    }
-  }
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
 
   useEffect(() => {
-    fetchUsers();
+    fetchItems();
   }, []);
 
+  const fetchItems = async () => {
+    try {
+      const response = await apiClient.get("/galleries");
+      setGallery(response.data);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+    }
+  };
 
   return (
-    <div className="pb-20 px-4 md:px-0">
-      {category?.map((data, i) => {
-        const isActive = active === i;
-        return (
-          <div
-            className={
-              isActive
-                ? "overflow-hidden py-6 text-slate-600  "
-                : " h-[4rem] overflow-hidden py-6  text-slate-600 "
-            }
-            key={i}
-          >
-            <div
-              onClick={() => toggleActive(i)}
-              className="flex cursor-pointer items-center md:mx-10 border-b pb-4  justify-between "
+    <div className="relative w-full h-[20rem] mb-4">
+      <Slider {...settings}>
+        {gallery.slice(0, 5).map((image, index) => (
+          <div className="relative" key={index}>
+            <img
+              src={image.url}
+              className="w-full h-[20rem] object-cover md:rounded-md"
+              alt={`Slide ${index}`}
+            />
+            <Link
+              to={"/gallery"}
+              className="text-lg bg-black/10 flex items-center justify-center gap-2 border border-white px-5 py-1 rounded-lg absolute bottom-3 left-1/2 -translate-x-1/2 text-white "
             >
-              <p className="text-sm uppercase">{data.title}</p>
-              {isActive ? (
-                <FaAngleUp className=" cursor-pointer" size={15} />
-              ) : (
-                <FaAngleDown className=" cursor-pointer" size={15} />
-              )}
-            </div>
-            <div className="flex mt-3 flex-col">
-              {data.services.map((ser, i) => {
-                return (
-                  <NavLink to={`book-appointment/${ser.id}`} className="text-xs hover:bg-gray-300/30 w-full py-4  md:px-10" key={i}>
-                    <p className=" font-semibold">{ser.name}</p>
-                    <div className="flex mt-1 gap-2 items-center text-gray-500">
-                      <p>{ser.duration} .</p>
-                      <p>₦{ser.price} .</p>
-                      <div className="" onClick={handleClick}>
-                      <More
-                        data={ser}
-                        title={ser.name}
-                        duration={ser.duration}
-                        price={ser.price}
-                        id={ser.id}
-                        
-                      />
-                      </div>
-                    </div>
-                  </NavLink>
-                );
-              })}
-            </div>
+              <span className="">{image.category.charAt(0).toUpperCase() + image.category.slice(1)}</span>
+              <FaAngleRight size={15} />
+            </Link>
           </div>
-        );
-      })}
+        ))}
+      </Slider>
     </div>
   );
 };
