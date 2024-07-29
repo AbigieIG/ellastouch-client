@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FaAngleLeft } from "react-icons/fa6";
 import apiClient from "../utils/axios";
 import { isAxiosError } from "../utils/axiosError";
+import Spinner from "../components/Spinner";
 
 const Login: React.FC = () => {
   const [form, setForm] = useState({
@@ -15,6 +16,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [active, setActive] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,6 +28,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     try {
       if (form.email === "" || form.password === "") {
         setError("email and password are required");
@@ -42,6 +45,8 @@ const Login: React.FC = () => {
       } else {
         setError("An unexpected error occurred");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,9 +140,9 @@ const Login: React.FC = () => {
             {error && <p className="text-red-500 mb-4">{error}</p>}
             <button
               type="submit"
-              className="w-full bg-blue-600/90 text-white py-2 rounded hover:bg-blue-700 transition duration-300"
+              className="w-full bg-blue-600/90 flex items-center justify-center text-white py-2 rounded hover:bg-blue-700 transition duration-300"
             >
-              Login
+             {loading ? <Spinner /> : "Login"}
             </button>
           </form>
           <div className="mt-10 text-center">

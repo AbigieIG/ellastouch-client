@@ -3,10 +3,12 @@ import apiClient from "../utils/axios";
 import { UserType } from "../types";
 import { isAxiosError } from "../utils/axiosError";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner";
 
 const UserEditForm: React.FC = () => {
   const [user, setUser] = useState<UserType>({} as UserType);
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -15,6 +17,7 @@ const UserEditForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     try {
     const res =  apiClient.put("/users/edit", user, {
         withCredentials: true,
@@ -26,6 +29,8 @@ const UserEditForm: React.FC = () => {
       } else {
         setError("An unexpected error occurred");
       }
+    } finally {
+      setLoading(false);
     }
   };
 const navigate = useNavigate();
@@ -122,9 +127,9 @@ const navigate = useNavigate();
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 flex justify-center items-center bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              Save Changes
+              {loading ? <Spinner /> : "Save Changes"}
             </button>
           </div>
         </form>

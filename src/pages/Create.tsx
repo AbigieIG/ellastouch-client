@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ServiceType, CategoryType } from "../types/index";
 import apiClient from "../utils/axios";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner";
 
 const ServiceForm: React.FC = () => {
   const [formData, setFormData] = useState<ServiceType>({
@@ -15,6 +16,7 @@ const ServiceForm: React.FC = () => {
     terms: [],
   });
   const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,14 +56,15 @@ const ServiceForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     try {
-    const res =  await apiClient.post("/services", formData, {
-      withCredentials: true,
-    });
-      if(res.status === 201) {
+      const res = await apiClient.post("/services", formData, {
+        withCredentials: true,
+      });
+      if (res.status === 201) {
         alert("Service created successfully");
         localStorage.setItem("activeTab", "service");
-        navigate("/admin")
+        navigate("/admin");
         setFormData({
           name: "",
           categoryId: "",
@@ -71,13 +74,14 @@ const ServiceForm: React.FC = () => {
           workingHours: [],
           extraCharges: [],
           terms: [],
-        })
+        });
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+    } finally {
+      setLoading(false);
     }
   };
-
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto">
@@ -227,9 +231,9 @@ const ServiceForm: React.FC = () => {
         <div className="flex justify-end space-x-2">
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="px-4 py-2 flex items-center justify-center bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Create Service
+            {loading ? <Spinner /> : " Create Service"}
           </button>
         </div>
       </form>

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import apiClient from "../utils/axios";
+import Spinner from "../components/Spinner";
 
 interface FormState {
   fullName: string;
@@ -31,6 +32,7 @@ const Register: React.FC = () => {
     agreeTerms: false,
   });
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement >
@@ -51,6 +53,7 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     try {
       if (!formState.agreeTerms) {
         setError("You must agree to the terms and conditions");
@@ -66,6 +69,8 @@ const Register: React.FC = () => {
     } catch (error) {
       console.error(error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -268,9 +273,9 @@ const Register: React.FC = () => {
             {error && <p className="text-red-500 mb-4">{error}</p>}
             <button
               type="submit"
-              className="w-full bg-blue-600/85 text-white py-2 rounded hover:bg-blue-700/90 transition duration-300"
+              className="w-full flex items-center justify-center bg-blue-600/85 text-white py-2 rounded hover:bg-blue-700/90 transition duration-300"
             >
-              Create
+             {loading ? <Spinner /> : "Create"}
             </button>
           </form>
         </div>

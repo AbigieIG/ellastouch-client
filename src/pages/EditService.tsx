@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { ServiceType, CategoryType } from "../types/index";
 import apiClient from "../utils/axios";
 import { useNavigate, useParams } from "react-router-dom";
+import Spinner from "../components/Spinner";
 
 const ServiceForm: React.FC = () => {
   const [formData, setFormData] = useState<ServiceType>({} as ServiceType);
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const { id } = useParams<{ id: string }>();
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,6 +61,7 @@ const ServiceForm: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     e.preventDefault();
     try {
       if (id) {
@@ -73,6 +76,8 @@ const ServiceForm: React.FC = () => {
     navigate("/admin");
     } catch (error) {
       console.error("Error submitting form:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -222,7 +227,7 @@ const ServiceForm: React.FC = () => {
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Save Changes
+           {loading ? <Spinner /> : "Save Changes"}
           </button>
         </div>
       </form>

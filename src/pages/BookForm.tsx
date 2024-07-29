@@ -6,7 +6,8 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import apiClient from "../utils/axios";
 import { UserType } from "../types";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
+import Spinner from "../components/Spinner";
 
 interface FormState {
   fullName: string;
@@ -46,6 +47,11 @@ const Register: React.FC = () => {
     comment: "",
   });
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [active, setActive] = useState(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     apiClient
       .get("/users/data", {
@@ -75,7 +81,6 @@ const Register: React.FC = () => {
     }
   }, [user]);
 
-  const [error, setError] = useState<string>("");
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -91,24 +96,43 @@ const Register: React.FC = () => {
     }));
   };
 
-  const [active, setActive] = useState(false);
-  const navigate = useNavigate();
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+   
+    if (
+      !formState.fullName ||
+      !formState.email ||
+      !formState.phoneNumber ||
+      !formState.state ||
+      !formState.city ||
+      !formState.address ||
+      !formState.zipCode
+    ) {
+      setError("Please fill in all required fields");
+      return;
+    }
+    
     if (!formState.agreeTerms) {
       setError("Please agree to our terms and conditions");
       return;
     }
+
+    setLoading(true); // Start loading
     try {
       const res: AxiosResponse = await apiClient.post("/bookings", formState);
-      if(res.status === 201) {  
+      if (res.status === 201) {
         localStorage.setItem("bookId", JSON.stringify(res.data.id));
         navigate("/confirm");
-
       }
     } catch (error) {
       console.log(error);
+      if (error instanceof AxiosError) {
+        setError(
+          error.response?.data.message || "An unexpected error occurred"
+        );
+      }
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -181,7 +205,7 @@ const Register: React.FC = () => {
           </p>
         </div>
       </div>
-      <div className="flex  justify-center mt-7 h-full overflow-auto px-4 md:px-0">
+      <div className="flex justify-center mt-7 h-full overflow-auto px-4 md:px-0">
         <div className="bg-white md:p-8 rounded w-full max-w-lg">
           <form onSubmit={handleSubmit}>
             <div className="mb-4 relative">
@@ -193,6 +217,7 @@ const Register: React.FC = () => {
                 value={formState.fullName}
                 onChange={handleChange}
                 placeholder=" "
+                disabled={loading} // Disable input if loading
               />
               <label
                 htmlFor="fullName"
@@ -207,6 +232,7 @@ const Register: React.FC = () => {
                 value={formState.phoneNumber}
                 onChange={handlePhoneChange}
                 inputClass="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600 peer"
+                disabled={loading} // Disable input if loading
               />
             </div>
             <div className="mb-4 relative">
@@ -218,6 +244,7 @@ const Register: React.FC = () => {
                 value={formState.email}
                 onChange={handleChange}
                 placeholder=" "
+                disabled={loading} // Disable input if loading
               />
               <label
                 htmlFor="email"
@@ -236,6 +263,7 @@ const Register: React.FC = () => {
                   value={formState.state}
                   onChange={handleChange}
                   placeholder=" "
+                  disabled={loading} // Disable input if loading
                 />
                 <label
                   htmlFor="state"
@@ -253,6 +281,7 @@ const Register: React.FC = () => {
                   value={formState.zipCode}
                   onChange={handleChange}
                   placeholder=" "
+                  disabled={loading} // Disable input if loading
                 />
                 <label
                   htmlFor="zipCode"
@@ -271,6 +300,7 @@ const Register: React.FC = () => {
                 value={formState.city}
                 onChange={handleChange}
                 placeholder=" "
+                disabled={loading} // Disable input if loading
               />
               <label
                 htmlFor="city"
@@ -288,6 +318,7 @@ const Register: React.FC = () => {
                 value={formState.address}
                 onChange={handleChange}
                 placeholder=" "
+                disabled={loading} // Disable input if loading
               />
               <label
                 htmlFor="address"
@@ -304,6 +335,7 @@ const Register: React.FC = () => {
                 value={formState.comment}
                 onChange={handleChange}
                 placeholder=" "
+                disabled={loading} // Disable input if loading
               />
               <label
                 htmlFor="comment"
@@ -320,6 +352,7 @@ const Register: React.FC = () => {
                 className="mr-2"
                 checked={formState.agreeTerms}
                 onChange={handleChange}
+                disabled={loading} // Disable input if loading
               />
               <label htmlFor="agreeTerms" className="text-gray-700 font-medium">
                 I agree to the terms and conditions
@@ -328,9 +361,10 @@ const Register: React.FC = () => {
             {error && <p className="text-red-500 mb-4">{error}</p>}
             <button
               type="submit"
-              className="w-full bg-blue-600/85 text-white py-2 rounded hover:bg-blue-700/90 transition duration-300"
+              className="w-full flex items-center justify-center bg-blue-600/85 text-white py-2 rounded hover:bg-blue-700/90 transition duration-300"
+              disabled={loading} // Disable button if loading
             >
-              Book Service
+              {loading ? <Spinner /> : "Book Service"}
             </button>
           </form>
         </div>
