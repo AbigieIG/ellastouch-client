@@ -31,12 +31,12 @@ const Register: React.FC = () => {
     const savedBooking = localStorage.getItem("booking");
     return savedBooking ? JSON.parse(savedBooking) : {};
   });
-
+ console.log(booking);
   const [formState, setFormState] = useState<FormState>({
     userId: null,
     time: booking.time || "",
     date: booking.date || "",
-    serviceId: booking.id || "",
+    serviceId: booking._id || "",
     fullName: "",
     email: "",
     phoneNumber: "",
@@ -66,10 +66,10 @@ const Register: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (user.id) {
+    if (user._id) {
       setFormState((prevState) => ({
         ...prevState,
-        userId: user.id || "",
+        userId: user._id || "",
         fullName: user.fullName || "",
         email: user.email || "",
         phoneNumber: user.phoneNumber || "",
@@ -121,7 +121,7 @@ const Register: React.FC = () => {
     try {
       const res: AxiosResponse = await apiClient.post("/bookings", formState);
       if (res.status === 201) {
-        localStorage.setItem("bookId", JSON.stringify(res.data.id));
+        localStorage.setItem("bookId", JSON.stringify(res.data._id));
         navigate("/confirm");
       }
     } catch (error) {
@@ -132,7 +132,7 @@ const Register: React.FC = () => {
         );
       }
     } finally {
-      setLoading(false); // End loading
+      setLoading(false); 
     }
   };
 

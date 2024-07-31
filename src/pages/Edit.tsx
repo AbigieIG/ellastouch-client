@@ -14,7 +14,7 @@ const UserEditForm: React.FC = () => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
   };
-
+  const navigate = useNavigate();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -31,9 +31,10 @@ const UserEditForm: React.FC = () => {
       }
     } finally {
       setLoading(false);
+      navigate("/user-page")
     }
   };
-const navigate = useNavigate();
+
 
   useEffect(() => {
     apiClient
@@ -42,7 +43,6 @@ const navigate = useNavigate();
       })
       .then((res) => {
         setUser(res.data);
-        navigate("/edit");
       })
       .catch((error) => {
         console.error(error);

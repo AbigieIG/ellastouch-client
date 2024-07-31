@@ -17,6 +17,7 @@ const UserPage: React.FC = () => {
         withCredentials: true,
       })
       .then((res) => {
+        console.log(res.data);
         setUser(res.data);
       })
       .catch((error) => {
@@ -111,15 +112,15 @@ const UserPage: React.FC = () => {
               <tbody>
                 {user?.bookings?.map((book) => (
                   <tr
-                    onClick={() => navigate(`/bookings/${book.id}`)}
+                    onClick={() => navigate(`/bookings/${book._id}`)}
                     className="bg-white border-b cursor-pointer"
-                    key={book.id}
+                    key={book._id}
                   >
                     <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
                       {book.bookingId} 
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                      {book.service?.name} 
+                      {book.serviceId?.name} 
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
                       {book.time} 

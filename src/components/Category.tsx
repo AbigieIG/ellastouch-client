@@ -40,13 +40,13 @@ const Categories: React.FC = () => {
     if (editCategory && editedName.trim()) {
       setIsLoadingEdit(true);
       try {
-        const res: AxiosResponse<CategoryType> = await apiClient.put(`/categories/${editCategory.id}`, {
+        const res: AxiosResponse<CategoryType> = await apiClient.put(`/categories/${editCategory._id}`, {
           title: editedName,
         }, {
           withCredentials: true,
         });
         setCategories(prevCategories => 
-          prevCategories.map(cat => cat.id === editCategory.id ? res.data : cat)
+          prevCategories.map(cat => cat._id === editCategory._id ? res.data : cat)
         );
         // setEditCategory(null);
         setEditedName("");
@@ -64,7 +64,7 @@ const Categories: React.FC = () => {
       await apiClient.delete(`/categories/${id}`, {
         withCredentials: true,
       });
-      setCategories(prevCategories => prevCategories.filter(cat => cat.id !== id));
+      setCategories(prevCategories => prevCategories.filter(cat => cat._id !== id));
     } catch (error) {
       console.error("Failed to delete category:", error);
     } finally {
@@ -76,6 +76,7 @@ const Categories: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const res: AxiosResponse<CategoryType[]> = await apiClient.get("/categories");
+        console.log(res);
         setCategories(res.data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -111,10 +112,10 @@ const Categories: React.FC = () => {
       <div className="space-y-4">
         {categories.map((category) => (
           <div
-            key={category.id}
+            key={category._id}
             className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center"
           >
-            {editCategory?.id === category.id ? (
+            {editCategory?._id === category._id ? (
               <input
                 type="text"
                 className="col-span-2 px-4 py-2 border lowercase rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -126,7 +127,7 @@ const Categories: React.FC = () => {
               <span className="col-span-2 lowercase">{category.title}</span>
             )}
             <div className="flex space-x-2">
-              {editCategory?.id === category.id ? (
+              {editCategory?._id === category._id ? (
                 <button
                   className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
                   onClick={handleSaveEdit}
@@ -145,10 +146,10 @@ const Categories: React.FC = () => {
               )}
               <button
                 className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
-                onClick={() => handleDeleteCategory(category.id)}
-                disabled={loadingDeleteId === category.id}
+                onClick={() => handleDeleteCategory(category._id)}
+                disabled={loadingDeleteId === category._id}
               >
-                {loadingDeleteId === category.id ? "Deleting..." : "Delete"}
+                {loadingDeleteId === category._id ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>

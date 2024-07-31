@@ -29,7 +29,7 @@ const Home = () => {
          <Carousel  />
         <div className="px-4 md:px-0">
           <p className="text-sm leading-7 text-slate-600">
-            <b className=" font-bold"> Ellas Touch Mua </b>is a Nigerian owned
+            <b className=" font-bold"> EllasTouch Makeover</b> is a Nigerian owned
             makeup brand that specializes in Bridals, Events ,Shoots and
             Trainings of Makeup. Our makeup service guarantees a seamless
             finish,lightweight and long lasting finish. We are very good at what

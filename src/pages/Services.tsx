@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import services from "../assets/data/service";
 import { FaAngleRight } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import apiClient from "../utils/axios";
@@ -13,7 +12,6 @@ const Services = () => {
     try {
       const response = await apiClient.get("/services");
       setServices(response.data)
-
     } catch (error) {
       console.error("Error fetching users:", error);
       throw error;
@@ -32,7 +30,7 @@ const Services = () => {
   };
 
   return (
-    <div className="px-10 w-full  h-full overflow-auto py-5 text-sm">
+    <div className="md:px-10 px-5  w-full overflow-x-hidden  h-full overflow-y-auto py-5 text-sm">
       <div>
         <h1 className="text-lg mb-4 font-semibold capitalize">Services</h1>
         <p> STUDIO WALK-IN SESSION</p>
@@ -42,19 +40,22 @@ const Services = () => {
         return (
           <div
             key={i}
-            className="flex group cursor-pointer gap-3 border-b py-4 flex-col my-5"
+            className="group cursor-pointer gap-3 border-b py-4 flex-col my-5"
           >
             <NavLink
-              to={`/book-appointment/${dat?.id}`}
-              className="flex items-center justify-between"
+              to={`/edit-ser/${dat._id}`}
+              className="flex flex-col md:flex-row items-start md:items-center justify-between"
             >
               <span>{dat.name}</span>
-              <div className="flex items-center gap-3 text-gray-600">
-                <span>{dat.duration}. </span>
-                <span>₦{dat.price}</span>
+              <div className="flex justify-between md:w-auto w-full items-center gap-3 text-gray-600">
+                <div>
+                  {" "}
+                  <span>{dat.duration}. </span>
+                  <span>₦{dat.price}</span>
+                </div>
                 <FaAngleRight
                   size={15}
-                  className="text-gray-400 ml-7  group-hover:bg-sky-600 group-hover:rounded-full group-hover:w-5 group-hover:h-5  group-hover:p-1 group-hover:text-white"
+                  className="text-gray-400 ml-7 group-hover:bg-sky-600 group-hover:rounded-full group-hover:w-5 group-hover:h-5 group-hover:p-1 group-hover:text-white"
                 />
               </div>
             </NavLink>

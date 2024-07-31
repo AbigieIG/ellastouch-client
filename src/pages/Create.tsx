@@ -116,7 +116,7 @@ const ServiceForm: React.FC = () => {
               Select Category
             </option>
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+              <option key={category._id} value={category._id}>
                 {category.title}
               </option>
             ))}

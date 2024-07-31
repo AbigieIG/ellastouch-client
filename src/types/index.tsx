@@ -11,11 +11,11 @@ export type MoreItem = {
 
 
 export interface ServiceType {
-  id?: string;
+  _id?: string;
   name: string;
   categoryId: string; 
   duration: string;
-  price: number;
+  price: number ;
   description: string[];
   workingHours: string[];
   extraCharges: string[];
@@ -23,7 +23,7 @@ export interface ServiceType {
 }
 
 export interface UserType {
-  id?: string;
+  _id?: string;
   fullName: string;
   phoneNumber: string;
   email: string;
@@ -33,11 +33,11 @@ export interface UserType {
   address: string;
   zipCode: string;
   createdAt?:  string | number | Date;
-  bookings?: BookingType[]
+  bookings?: IBooking[]
 }
 
 export interface BookingType {
-  id?: string;
+  _id?: string;
   userId: string | null;
   time?: string;
   date?: string;
@@ -58,7 +58,7 @@ export interface BookingType {
 
 
 export interface CategoryType {
-  id: string;
+  _id: string;
   title: string;
   services?: ServiceType[];
 }
@@ -67,10 +67,21 @@ export interface CategoryType {
 export interface AddressItem {
   title: string;
   icon: IconType;
-  link: string;
+  link: string ;
 }
 
 
+export interface IAddess  {
+  _id: string;
+  phoneNumber: string;
+  email: string;
+  instagram?: string;
+  address: string;
+  twitter?: string;
+  whatsapp?: string;
+  facebook?: string;
+  bank: Bank;
+}
 
 export interface SidebarItem {
   title: string;
@@ -91,7 +102,49 @@ export interface FormState {
 }
 
  export interface GalleryItem {
-  id: string;
+  _id: string;
   url: string;
   category: string;
+}
+
+export interface IAdmin  {
+  _id: string;
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  instagram?: string;
+  twitter?: string;
+  whatsapp?: string;
+  facebook?: string;
+  address: string;
+  password: string;
+  admin: boolean;
+  bank: Bank;
+}
+
+interface Bank {
+  name: string;
+  account: number;
+  bankName: string;
+}
+
+
+
+
+ export interface IBooking {
+  _id?: string;
+  userId: string | null;
+  time?: string;
+  date?: string;
+  bookingId?: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  state: string;
+  city: string;
+  address: string;
+  zipCode: string;
+  comment?: string;
+  serviceId?: ServiceType;
+  createdAt?: string | number | Date;
 }

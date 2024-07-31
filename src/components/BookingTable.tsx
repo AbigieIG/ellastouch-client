@@ -6,15 +6,15 @@ import { format } from "date-fns";
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import apiClient from "../utils/axios";
-import { BookingType } from "../types";
+import {  IBooking } from "../types";
 
 
 
 const BookingTable: React.FC = () => {
-  const [bookings, setBookings] = useState<BookingType[]>([]);
+  const [bookings, setBookings] = useState<IBooking[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterDate, setFilterDate] = useState<Date | null>(null);
-  const [filteredBookings, setFilteredBookings] = useState<BookingType[]>(bookings);
+  const [filteredBookings, setFilteredBookings] = useState<IBooking[]>(bookings);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const itemsPerPage = 5;
@@ -32,7 +32,7 @@ const BookingTable: React.FC = () => {
   useEffect(() => {
     let results = bookings?.filter(
       (booking) =>
-        booking?.service?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking?.serviceId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking?.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -99,13 +99,13 @@ const BookingTable: React.FC = () => {
           </thead>
           <tbody className="w-full">
             {currentBookings?.map((booking, i) => (
-              <tr  onClick={() => navigate(`/bookings/${booking.id}`)} className="bg-white border-b cursor-pointer" key={booking.id}>
+              <tr  onClick={() => navigate(`/bookings/${booking._id}`)} className="bg-white border-b cursor-pointer" key={booking._id}>
                 <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{i + 1}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.service?.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.serviceId?.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.date}</td>
                 <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.time}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.service?.duration}</td>
-                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.service?.price}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.serviceId?.duration}</td>
+                <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.serviceId?.price}</td>
                 <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.fullName}</td>
                 <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">{booking?.email}</td>
               </tr>

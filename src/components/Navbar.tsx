@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/images/profilepic.webp";
+import logo from "../assets/images/logo1.jpg";
 import { IoPersonCircleOutline, IoMenu, IoClose } from "react-icons/io5";
 import { MdDashboard } from "react-icons/md";
 import { RiHome4Fill } from "react-icons/ri";
@@ -34,13 +34,13 @@ const Navbar = () => {
     <nav className="w-full z-50  top-0 bg-white ">
       <div className="container mx-auto flex items-center justify-between p-4 md:px-10">
         <NavLink to="/" className="flex items-center">
-          <img className="w-10 h-10 rounded-full" src={logo} alt="logo" />
+          <img className="w-10 h-10 border border-slate-300 rounded-full" src={logo} alt="logo" />
           <div className="ml-2">
             <h1 className="text-sm text-slate-600 font-semibold">
-              Ellas Touch Mua
+              EllasTouch Makeover
             </h1>
             <p className="text-xs text-gray-400">
-              Satelite Town, Lagos, Nigeria
+            satellite/amuwo/Festac/Ago
             </p>
           </div>
         </NavLink>

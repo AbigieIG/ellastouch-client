@@ -11,6 +11,7 @@ interface Bank {
   link: string
 }
 
+
 const address: AddressItem[] = [
   {
     title: "Petrocam Filling Station  abulado bus stop Satellite",
@@ -38,7 +39,7 @@ export const bank: Bank = {
   account: 1990050715,
   name: "ZEE BEAUTY ROYALE",
   bank: "ECO BANK",
-  link: ""
+  link: ""  
 
 };
 

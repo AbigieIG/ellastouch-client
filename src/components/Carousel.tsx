@@ -42,7 +42,7 @@ const Carousel: React.FC = () => {
             <img
               src={image.url}
               className="w-full h-[20rem] object-cover md:rounded-md"
-              alt={`Slide ${index}`}
+              alt={`Slide-${index}`}
             />
             <Link
               to={"/gallery"}

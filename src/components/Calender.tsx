@@ -6,7 +6,7 @@ import { ServiceType } from "../types/index";
 import Cookies from "js-cookie";
 
 interface Booking {
-  id: string | undefined;
+  _id: string | undefined;
   name: string | undefined;
   duration: string | undefined;
   price: number | undefined;
@@ -52,7 +52,7 @@ const BookingCalendar = ({ data }: { data: ServiceType | undefined }) => {
     if (!selectedSlot || !date) return;
 
     const newBooking: Booking = {
-      id: data?.id,
+      _id: data?._id,
       name: data?.name,
       duration: data?.duration,
       price: data?.price,

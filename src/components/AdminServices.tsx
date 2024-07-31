@@ -35,7 +35,7 @@ const Services = () => {
       if (res.status === 204) {
         setServices((prev) => {
           if (prev) {
-            return prev.filter((dat) => dat.id !== id);
+            return prev.filter((dat) => dat._id !== id);
           }
           return prev;
         });
@@ -58,7 +58,7 @@ const Services = () => {
             className="group cursor-pointer gap-3 border-b py-4 flex-col my-5"
           >
             <NavLink
-              to={`/edit-ser/${dat.id}`}
+              to={`/edit-ser/${dat._id}`}
               className="flex flex-col md:flex-row items-start md:items-center justify-between"
             >
               <span>{dat.name}</span>
@@ -114,13 +114,13 @@ const Services = () => {
                   </ul>
                   <div className="flex  md:flex-row items-start md:items-center gap-4 mt-5">
                     <button
-                      onClick={() => navigate(`/edit-ser/${dat.id}`)}
+                      onClick={() => navigate(`/edit-ser/${dat._id}`)}
                       className="bg-sky-600 text-white py-2 rounded px-4"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(dat.id)}
+                      onClick={() => handleDelete(dat._id)}
                       className="bg-red-600 text-white py-2 rounded px-4"
                     >
                       Delete

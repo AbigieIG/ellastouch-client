@@ -1,13 +1,13 @@
 // src/components/BookingDetail.tsx
 import React, { useState } from "react";
-import { BookingType } from "../types";
+import {  IBooking } from "../types";
 import apiClient from "../utils/axios";
 import { AxiosError } from "axios";
 
 
 const BookingDetail: React.FC = () => {
   const [searchId, setSearchId] = useState<string>("");
-  const [booking, setBooking] = useState<BookingType | null>(null);
+  const [booking, setBooking] = useState<IBooking | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +30,7 @@ const BookingDetail: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
+    <div className="max-w-2xl h-screen mx-auto p-6 bg-white shadow-md rounded-md mt-10">
       <h1 className="text-2xl font-bold mb-4">Search Booking</h1>
       <div className="mb-4 flex">
         <input
@@ -75,15 +75,15 @@ const BookingDetail: React.FC = () => {
           </div>
           <div className="mb-2">
             <strong className="text-gray-600">Service:</strong>{" "}
-            {booking.service?.name}
+            {booking.serviceId?.name}
           </div>
           <div className="mb-2">
             <strong className="text-gray-600">Duration:</strong>{" "}
-            {booking.service?.duration}
+            {booking.serviceId?.duration}
           </div>
           <div className="mb-2">
             <strong className="text-gray-600">Price:</strong>{" "}
-            {booking.service?.price}
+            ₦{booking.serviceId?.price}
           </div>
          {booking.comment && (
             <div className="mb-2">

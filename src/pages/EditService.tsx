@@ -112,7 +112,7 @@ const ServiceForm: React.FC = () => {
             onChange={handleChange}
           >
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+              <option key={category._id} value={category._id}>
                 {category.title}
               </option>
             ))}

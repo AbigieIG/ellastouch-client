@@ -119,9 +119,9 @@ const UserTable: React.FC = () => {
           <tbody>
             {currentUsers.map((user, i) => (
               <tr
-                onClick={() => navigate(`/user/${user.id}`)}
+                onClick={() => navigate(`/user/${user._id}`)}
                 className="bg-white border-b cursor-pointer"
-                key={user.id}
+                key={user._id}
               >
                 <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
                   {i + 1}

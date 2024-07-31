@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { BookingType } from "../types";
+import { IBooking } from "../types";
 import apiClient from "../utils/axios";
 import { AxiosResponse } from "axios";
 
 const BookingDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [booking, setBooking] = useState<BookingType>({} as BookingType);
+  const [booking, setBooking] = useState<IBooking>({} as IBooking);
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -62,7 +62,7 @@ const BookingDetails: React.FC = () => {
         </div>
         <div className="flex flex-col">
           <label className="font-semibold text-gray-700">Dervice:</label>
-          <span className="text-gray-600">{booking.service?.name}</span>
+          <span className="text-gray-600">{booking.serviceId?.name}</span>
         </div>
         <div className="flex flex-col">
           <label className="font-semibold text-gray-700">Date:</label>
@@ -74,11 +74,11 @@ const BookingDetails: React.FC = () => {
         </div>
         <div className="flex flex-col">
           <label className="font-semibold text-gray-700">Duration:</label>
-          <span className="text-gray-600">{booking.service?.duration}</span>
+          <span className="text-gray-600">{booking.serviceId?.duration}</span>
         </div>
         <div className="flex flex-col">
           <label className="font-semibold text-gray-700">Price:</label>
-          <span className="text-gray-600">{booking.service?.price}</span>
+          <span className="text-gray-600">{booking.serviceId?.price}</span>
         </div>
       </div>
     </div>

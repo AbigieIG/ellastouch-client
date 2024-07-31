@@ -66,7 +66,7 @@ const Carousel = () => {
             <div className="flex mt-3 flex-col">
               {data.services?.map((ser, i) => {
                 return (
-                  <NavLink to={`book-appointment/${ser.id}`} className="text-xs hover:bg-gray-300/30 w-full py-4  md:px-10" key={i}>
+                  <NavLink to={`book-appointment/${ser._id}`} className="text-xs hover:bg-gray-300/30 w-full py-4  md:px-10" key={i}>
                     <p className=" font-semibold">{ser.name}</p>
                     <div className="flex mt-1 gap-2 items-center text-gray-500">
                       <p>{ser.duration} .</p>
@@ -77,7 +77,7 @@ const Carousel = () => {
                         title={ser.name}
                         duration={ser.duration}
                         price={ser.price}
-                        id={ser.id}
+                        id={ser._id}
                         
                       />
                       </div>

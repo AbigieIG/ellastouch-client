@@ -2,17 +2,21 @@ import React, { useEffect, useState } from "react";
 import StepBar from "../components/Stepbar";
 import { useNavigate } from "react-router-dom";
 import { FaAngleLeft } from "react-icons/fa6";
-import logo from "../assets/images/profilepic.webp";
-import { BookingType } from "../types";
+import logo from "../assets/images/logo1.jpg";
 import apiClient from "../utils/axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { bank } from "../assets/data/address";
+import { IAddess, IBooking } from "../types";
+
+
+
 
 const Confirmation: React.FC = () => {
   const [active, setActive] = useState(false);
   const navigate = useNavigate();
-  const [data, setData] = useState<BookingType>({} as BookingType);
+  const [data, setData] = useState<IBooking>({} as IBooking );
+  const [addressItem, setAddress] = useState<IAddess[]>([])
   const [bookId] = useState(() => {
     const savedData = localStorage.getItem("bookId");
     return savedData ? JSON.parse(savedData) : {};
@@ -25,11 +29,22 @@ const Confirmation: React.FC = () => {
       })
       .then((res) => {
         setData(res.data);
+        console.log(res.data);
       })
       .catch((error) => {
         console.error(error);
       });
   }, [bookId]);
+
+
+
+    useEffect(() => {
+      apiClient.get("/address")
+      .then((res) => {
+        setAddress(res.data)
+      })
+      .catch((err) => console.error(err))
+    }, [])
 
   const handleSaveAsImage = () => {
     html2canvas(document.querySelector("#confirmation")!).then((canvas) => {
@@ -99,17 +114,17 @@ const Confirmation: React.FC = () => {
       <div id="confirmation" className="md:px-10 mt-10">
         <div className="flex flex-col justify-center items-center md:flex-row gap-5">
           <img
-            className="md:w-20 md:h-20 h-10 w-10 rounded-full"
+            className="md:w-20 border border-slate-300 md:h-20 h-10 w-10 rounded-full"
             src={logo}
             alt="Profile"
           />
           <div className="text-sm text-slate-600 flex flex-col gap-5">
             <h1 className="text-slate-700 text-lg">
-              You are booked with Ellas Touch Mua
+              You are booked with  EllasTouch Makeover
             </h1>
             <div className="flex items-center gap-10">
               <span className="text-slate-400">Service</span>
-              <span>{data.service?.name}</span>
+              <span>{data.serviceId?.name}</span>
             </div>
             <div className="flex items-center gap-10">
               <span className="text-slate-400">Date & time</span>
@@ -146,8 +161,8 @@ const Confirmation: React.FC = () => {
           </button>
         </div>
         <p className="text-sm w-full text-sky-600 leading-6 text-center mt-7">
-          Kindly proceed to make payment into "{bank.account}  {bank.bank}{" "}
-          {bank.name}
+          Kindly proceed to make payment into "{addressItem[0]?.bank.account}  {addressItem[0]?.bank.bankName}{" "}
+          {addressItem[0]?.bank.name}
           ". Then send Payment receipt to our{" "}
           <a href={bank.link} className="underline" target="_blank">
             {" "}

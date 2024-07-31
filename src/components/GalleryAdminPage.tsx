@@ -63,7 +63,7 @@ const GalleryAdminPage: React.FC = () => {
         },);
         setItems(
           items.map((item) =>
-            item.id === editingItemId
+            item._id === editingItemId
               ? { ...item, category: form.category }
               : item
           )
@@ -89,7 +89,7 @@ const GalleryAdminPage: React.FC = () => {
 
   const handleEdit = (item: GalleryItem) => {
     setForm({ category: item.category, image: item.url });
-    setEditingItemId(item.id);
+    setEditingItemId(item._id);
   };
 
   const handleDelete = async (id: string) => {
@@ -98,7 +98,7 @@ const GalleryAdminPage: React.FC = () => {
       await apiClient.delete(`/galleries/${id}`, {
         withCredentials: true,
       });
-      setItems(items.filter((item) => item.id !== id));
+      setItems(items.filter((item) => item._id !== id));
     } catch (error) {
       console.error("Error deleting item:", error);
     } finally {
@@ -190,10 +190,10 @@ const GalleryAdminPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
-          <div key={item.id} className="relative">
+          <div key={item._id} className="relative">
             <img
               src={item.url}
-              alt={`Gallery item ${item.id}`}
+              alt={`Gallery item ${item._id}`}
               className="w-full h-auto object-cover rounded-lg shadow-md cursor-pointer"
               onClick={() => handlePreview(item.url)}
             />
@@ -207,7 +207,7 @@ const GalleryAdminPage: React.FC = () => {
               Edit
             </button>
             <button
-              onClick={() => handleDelete(item.id)}
+              onClick={() => handleDelete(item._id)}
               className="absolute top-2 right-12 text-red-500"
               disabled={loading.delete}
             >
