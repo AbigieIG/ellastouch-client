@@ -12,7 +12,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const token = localStorage.getItem("token") 
   const user = localStorage.getItem("user") 
-  const admin = localStorage.getItem("admin");
+  const admin = localStorage.getItem("isAdmin");
   const navigate = useNavigate();
   const location = useLocation();
   const toggleMenu = () => {

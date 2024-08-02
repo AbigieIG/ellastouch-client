@@ -32,9 +32,10 @@ const Login: React.FC = () => {
         if (form.email === import.meta.env.VITE_ADMIN_EMAIL) {
           const res = await apiClient.post("/admin/login", form);
           if (res.status === 200) {
-            navigate("/admin");
-            localStorage.setItem("admin", JSON.stringify(res.data));
+            console.log(res.data.user);
+            localStorage.setItem("isAdmin", res.data.user.admin);
             localStorage.setItem("token", res.data.token);
+            navigate("/admin");
           }
         } else {
           const res = await apiClient.post("/login", form, {

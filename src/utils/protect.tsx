@@ -1,11 +1,7 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface AdminType {
-  user: {
-    admin: boolean;
-  };
-}
+
 export const UserRouther = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -18,13 +14,8 @@ export const UserRouther = ({ children }: { children: ReactNode }) => {
 };
 
 export const AdminRouter = ({ children }: { children: ReactNode }) => {
-  const [admin] = useState<AdminType>(() => {
-    const storedAdmin = localStorage.getItem("admin");
-    return storedAdmin ? JSON.parse(storedAdmin) : {};
-  });
-
+  const admin = localStorage.getItem("isAdmin")
   const navigate = useNavigate();
-
 
   useEffect(() => {
     if (!admin) {

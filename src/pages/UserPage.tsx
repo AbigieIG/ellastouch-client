@@ -127,10 +127,7 @@ const UserPage: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
                       {book.time} 
                     </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                    {book.service?.name}{" "}
-                    {book.service?.price} {book.service?.duration}
-                    </td> */}
+        
                     <td className="px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
                       {new Date(book.createdAt as Date).toLocaleDateString()}
                     </td>
