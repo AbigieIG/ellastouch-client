@@ -49,7 +49,7 @@ const UserPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen p-8">
+    <div className="min-h-screen p-8">
       <div className="flex items-center gap-4 mb-4">
         <button
           onClick={() => navigate("/edit-user")}
