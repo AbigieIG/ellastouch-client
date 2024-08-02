@@ -43,7 +43,7 @@ const Services = () => {
             className="group cursor-pointer gap-3 border-b py-4 flex-col my-5"
           >
             <NavLink
-              to={`/edit-ser/${dat._id}`}
+              to={`/book-appointment/${dat._id}`}
               className="flex flex-col md:flex-row items-start md:items-center justify-between"
             >
               <span>{dat.name}</span>
