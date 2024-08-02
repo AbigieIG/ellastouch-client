@@ -3,7 +3,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useNavigate } from "react-router-dom";
 import { ServiceType } from "../types/index";
-import Cookies from "js-cookie";
+
 
 interface Booking {
   _id: string | undefined;
@@ -19,7 +19,7 @@ const BookingCalendar = ({ data }: { data: ServiceType | undefined }) => {
   const [slots, setSlots] = useState<string[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const token = Cookies.get("token");
+  const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
 
