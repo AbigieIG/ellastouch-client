@@ -19,7 +19,6 @@ const UserPage: React.FC = () => {
         }
       })
       .then((res) => {
-        console.log(res.data);
         setUser(res.data);
       })
       .catch((error) => {
