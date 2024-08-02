@@ -66,11 +66,17 @@ const ServiceForm: React.FC = () => {
     try {
       if (id) {
         await apiClient.put(`/services/${id}`, formData, {
-          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
         });
       } else {
         await apiClient.post("/services", formData, {
-          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
         });
       }
     navigate("/admin");

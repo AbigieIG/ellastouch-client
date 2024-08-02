@@ -56,7 +56,10 @@ const Register: React.FC = () => {
         setError("You must agree to the terms and conditions");
       } else {
         const res: AxiosResponse = await apiClient.post("/users", formState, {
-          withCredentials: true,
+         headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+         }
         });
         console.log(res);
         setError("");

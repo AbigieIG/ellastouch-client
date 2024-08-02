@@ -55,7 +55,9 @@ const Register: React.FC = () => {
   useEffect(() => {
     apiClient
       .get("/users/data", {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
       })
       .then((res) => {
         setUser(res.data);

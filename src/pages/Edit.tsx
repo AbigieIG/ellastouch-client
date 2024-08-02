@@ -20,7 +20,10 @@ const UserEditForm: React.FC = () => {
     setLoading(true);
     try {
     const res =  apiClient.put("/users/edit", user, {
-        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
       });
       console.log(res);
     } catch (error) {
@@ -39,7 +42,10 @@ const UserEditForm: React.FC = () => {
   useEffect(() => {
     apiClient
       .get("/users/data", {
-        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
       })
       .then((res) => {
         setUser(res.data);

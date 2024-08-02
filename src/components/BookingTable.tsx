@@ -21,7 +21,9 @@ const BookingTable: React.FC = () => {
   
   useEffect(() => {
     apiClient.get("/bookings", {
-      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     }).then((res) => {
     setBookings(res.data)  
     }).catch((error) => {
@@ -65,7 +67,7 @@ const BookingTable: React.FC = () => {
   const navigate = useNavigate()
   return (
     <div className="bg-white w-full rounded-lg md:p-6">
-      {/* <h2 className="text-sm font-semibold mb-4">Bookings</h2> */}
+
       <h2 className="text-lg text-slate-700 font-semibold mb-4">Bookings</h2>
       <div className="mb-4 flex space-x-2">
         <input

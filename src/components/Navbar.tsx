@@ -10,7 +10,8 @@ import apiClient from "../utils/axios";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const token = Cookies.get("token");
+  const token = localStorage.getItem("token") 
+  const user = localStorage.getItem("user") 
   const admin = localStorage.getItem("admin");
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,7 +29,7 @@ const Navbar = () => {
       console.error(error);
     }
   };
-  useEffect(() => {}, [token, navigate, location, admin]);
+  useEffect(() => {}, [token, navigate, location, admin, user]);
 
   return (
     <nav className="w-full z-50  top-0 bg-white ">
@@ -46,7 +47,7 @@ const Navbar = () => {
         </NavLink>
         {token ? (
           <div className=" hidden lg:flex items-center gap-4">
-            {admin ? (
+            {!user ? (
               <Link
                 to="/admin"
                 className="flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
@@ -55,13 +56,15 @@ const Navbar = () => {
                 <span>Dashboard</span>
               </Link>
             ) : (
-              <Link
+             <button>
+               <Link
                 to="/user-page"
                 className="flex items-center gap-2 text-sky-600 border px-4 py-2 rounded-full"
               >
                 <RiHome4Fill size={17} />
                 <span>Profile</span>
               </Link>
+             </button>
             )}
             <button
               onClick={() => logout()}

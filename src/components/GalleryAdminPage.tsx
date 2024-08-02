@@ -58,8 +58,9 @@ const GalleryAdminPage: React.FC = () => {
         await apiClient.put(`/galleries/${editingItemId}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
           },
-          withCredentials: true,
+         
         },);
         setItems(
           items.map((item) =>
@@ -73,8 +74,8 @@ const GalleryAdminPage: React.FC = () => {
         const response = await apiClient.post("/upload", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
           },
-          withCredentials: true,
         });
         setItems([...items, response.data]);
       }
@@ -96,7 +97,10 @@ const GalleryAdminPage: React.FC = () => {
     setLoading((prev) => ({ ...prev, delete: true }));
     try {
       await apiClient.delete(`/galleries/${id}`, {
-        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
       });
       setItems(items.filter((item) => item._id !== id));
     } catch (error) {

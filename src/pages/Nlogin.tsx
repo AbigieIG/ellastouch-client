@@ -30,20 +30,21 @@ const Login: React.FC = () => {
         setError("email and password are required");
       } else {
         if (form.email === import.meta.env.VITE_ADMIN_EMAIL) {
-          const res = await apiClient.post("/admin/login", form, {
-            withCredentials: true,
-          });
+          const res = await apiClient.post("/admin/login", form);
           if (res.status === 200) {
             navigate("/admin");
             localStorage.setItem("admin", JSON.stringify(res.data));
+            localStorage.setItem("token", res.data.token);
           }
-         
         } else {
-          await apiClient.post("/login", form, {
+          const res = await apiClient.post("/login", form, {
             withCredentials: true,
           });
-
-          navigate("/user-page");
+          if (res.status === 200) {
+            localStorage.setItem("user", JSON.stringify(res.data));
+            localStorage.setItem("token", res.data.token);
+            navigate("/user-page");
+          }
         }
         setError("");
       }

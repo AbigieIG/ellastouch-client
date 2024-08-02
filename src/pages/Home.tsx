@@ -1,8 +1,5 @@
 import Accordion from "../components/Accordion";
 import { useState } from "react";
-// import { Link } from "react-router-dom";
-// import { FaAngleRight } from "react-icons/fa6";
-// import sample from "../assets/images/img-5207.webp";
 import Carousel from "../components/Carousel";
 
 
@@ -12,20 +9,7 @@ const Home = () => {
   return (
     <div className="w-full overflow-x-hidden  lg:mt-5">
       <div className="md:px-10 items-center gap-3">
-        {/* <div className="relative w-full h-[20rem] mb-4">
-          <img
-            className="w-full h-full object-cover md:rounded-md"
-            src={sample}
-            alt="logo"
-          />
-          <Link
-            to={"/gallery"}
-            className="text-lg bg-black/10 flex items-center justify-center gap-2 border border-white px-5 py-1 rounded-lg absolute bottom-3 left-1/2 -translate-x-1/2 text-white "
-          >
-            <span> Samples</span>
-            <FaAngleRight size={15} />
-          </Link>
-        </div> */}
+  
          <Carousel  />
         <div className="px-4 md:px-0">
           <p className="text-sm leading-7 text-slate-600">

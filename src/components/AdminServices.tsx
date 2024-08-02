@@ -30,7 +30,10 @@ const Services = () => {
     if (!id) return;
     try {
       const res: AxiosResponse = await apiClient.delete(`/services/${id}`, {
-        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
       });
       if (res.status === 204) {
         setServices((prev) => {

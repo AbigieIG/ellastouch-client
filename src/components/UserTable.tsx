@@ -17,7 +17,11 @@ const UserTable: React.FC = () => {
 
   async function fetchUsers() {
     try {
-      const response = await apiClient.get("/users");
+      const response = await apiClient.get("/users", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);

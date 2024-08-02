@@ -25,7 +25,9 @@ const Confirmation: React.FC = () => {
   useEffect(() => {
     apiClient
       .get(`bookings/${bookId}`, {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       })
       .then((res) => {
         setData(res.data);

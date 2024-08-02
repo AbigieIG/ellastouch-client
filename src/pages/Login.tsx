@@ -33,9 +33,13 @@ const Login: React.FC = () => {
       if (form.email === "" || form.password === "") {
         setError("email and password are required");
       } else {
-        await apiClient.post("/login", form, {
-          withCredentials: true,
+      const res =  await apiClient.post("/login", form, {
+         headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+         }
         });
+        localStorage.setItem("token", res.data.token);
         navigate("/book-form");
       }
       setError("");

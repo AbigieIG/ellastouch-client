@@ -10,24 +10,31 @@ const AdminProfile: React.FC = () => {
 
   useEffect(() => {
     apiClient
-      .get<IAdmin>("/admin", { withCredentials: true })
+      .get<IAdmin>("/admin", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
       .then((response) => setAdmin(response.data))
       .catch((error) => console.error(error));
   }, []);
 
   const handleUpdate = () => {
-    setLoading(true)
+    setLoading(true);
     if (admin) {
       apiClient
-        .put(`/admin`, admin, { withCredentials: true })
+        .put(`/admin`, admin, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        })
         .then((response) => {
           setAdmin(response.data);
           setIsEditing(false);
         })
         .catch((error) => console.error(error))
         .finally(() => {
-        setLoading(false)
-        })
+          setLoading(false);
+        });
     }
   };
 
@@ -241,7 +248,7 @@ const AdminProfile: React.FC = () => {
           onClick={handleUpdate}
           className="bg-green-500 text-white px-4 py-2 rounded ml-2"
         >
-          { loading ? <Spinner /> : "Save"}
+          {loading ? <Spinner /> : "Save"}
         </button>
       )}
     </div>

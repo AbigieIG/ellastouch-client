@@ -59,7 +59,10 @@ const ServiceForm: React.FC = () => {
     setLoading(true);
     try {
       const res = await apiClient.post("/services", formData, {
-        withCredentials: true,
+       headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+       }
       });
       if (res.status === 201) {
         alert("Service created successfully");

@@ -1,13 +1,14 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
 interface AdminType {
-  admin: boolean;
+  user: {
+    admin: boolean;
+  };
 }
 export const UserRouther = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
-  const token = Cookies.get("token");
+  const token = localStorage.getItem("token");
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -24,8 +25,9 @@ export const AdminRouter = ({ children }: { children: ReactNode }) => {
 
   const navigate = useNavigate();
 
+
   useEffect(() => {
-    if (admin.admin !== true) {
+    if (!admin) {
       navigate("/notfound");
     }
   }, [navigate, admin]);
@@ -48,7 +50,7 @@ export const ProtectedRouter = ({ children }: { children: ReactNode }) => {
 
 export const LoginRouther = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
-  const token = Cookies.get("token");
+  const token = localStorage.getItem("token");
   useEffect(() => {
     if (token) {
       navigate("/");

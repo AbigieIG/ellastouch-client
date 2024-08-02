@@ -19,7 +19,10 @@ const Categories: React.FC = () => {
         const res: AxiosResponse<CategoryType> = await apiClient.post("/categories", {
           title: newCategory,
         }, {
-          withCredentials: true,
+         headers: {
+           "Content-Type": "application/json",
+           "Authorization": `Bearer ${localStorage.getItem("token")}`
+         }
         });
         setCategories(prevCategories => [...prevCategories, res.data]);
         setNewCategory("");
@@ -43,7 +46,10 @@ const Categories: React.FC = () => {
         const res: AxiosResponse<CategoryType> = await apiClient.put(`/categories/${editCategory._id}`, {
           title: editedName,
         }, {
-          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
         });
         setCategories(prevCategories => 
           prevCategories.map(cat => cat._id === editCategory._id ? res.data : cat)
@@ -62,7 +68,10 @@ const Categories: React.FC = () => {
     setLoadingDeleteId(id);
     try {
       await apiClient.delete(`/categories/${id}`, {
-        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
       });
       setCategories(prevCategories => prevCategories.filter(cat => cat._id !== id));
     } catch (error) {
