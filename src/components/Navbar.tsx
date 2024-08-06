@@ -32,7 +32,7 @@ const Navbar = () => {
   useEffect(() => {}, [token, navigate, location, admin, user]);
 
   return (
-    <nav className="w-full z-50  top-0 bg-white ">
+    <nav className="w-full z-50 sticky  top-0 bg-white ">
       <div className="container mx-auto flex items-center justify-between p-4 md:px-10">
         <NavLink to="/" className="flex items-center">
           <img className="w-10 h-10 border border-slate-300 rounded-full" src={logo} alt="logo" />
