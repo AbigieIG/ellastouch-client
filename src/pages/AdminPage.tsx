@@ -17,7 +17,7 @@ const AdminPage: React.FC = () => {
   }, [active]);
 
   return (
-    <div className="h-screen overflow-auto p-6">
+    <div className=" p-6">
       <h1 className="text-lg font-bold text-slate-700 mb-6">Admin Dashboard</h1>
       <div className="flex overflow-x-auto items-center mb-4 justify-start md:justify-center w-full gap-2 border-b border-slate-300">
         {["booking", "user", "create", "service", "gallery", "category","admin"].map((tab) => (

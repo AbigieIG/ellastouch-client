@@ -147,7 +147,7 @@ const Register: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center mt-5 justify-between px-4 md:px-0">
+      <div className="flex items-center mb-10 mt-5 justify-between px-4 md:px-0">
         <button
           onClick={() => navigate(-1)}
           className="flex md:px-5 items-center gap-2"
@@ -209,7 +209,7 @@ const Register: React.FC = () => {
       </div>
       <div className="flex justify-center mt-7 h-full overflow-auto px-4 md:px-0">
         <div className="bg-white md:p-8 rounded w-full max-w-lg">
-          <form onSubmit={handleSubmit}>
+          <form className="mb-10" onSubmit={handleSubmit}>
             <div className="mb-4 relative">
               <input
                 type="text"

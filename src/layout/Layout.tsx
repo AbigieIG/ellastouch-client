@@ -21,7 +21,7 @@ const Layout = () => {
       <Navbar />
       <div className="flex  w-full h-full ">
         <Sidebar />
-        <div className="h-full lg:w-[55%] w-full">
+        <div className="h-full lg:w-[55%] md:h-screen md:overflow-auto w-full">
           <Outlet />
           <Footer />
         </div>
