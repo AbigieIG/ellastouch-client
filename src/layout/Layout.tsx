@@ -17,11 +17,11 @@ const Layout = () => {
       }
   }, [location]);
   return (
-    <div className="h-screen w-screen lg:px-16">
+    <div className=" lg:px-16">
       <Navbar />
-      <div className="flex w-full h-full ">
+      <div className="flex  w-full h-full ">
         <Sidebar />
-        <div className="h-full overflow-auto lg:w-[55%] w-full">
+        <div className="h-full lg:w-[55%] w-full">
           <Outlet />
           <Footer />
         </div>
